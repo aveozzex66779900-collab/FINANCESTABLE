@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>StableFin</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="navbar">
+  <h2>StableFin</h2>
+  <div>
+    <a href="login.html">Login</a>
+    <a href="signup.html" class="btn">Start Free</a>
+    <a href="admin-login.html">Admin</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>Accept Payments Like a Pro</h1>
+    <p>UPI • Cards • Crypto • Links</p>
+    <a href="signup.html" class="btn-big">Get Started</a> 
+  </div>
+
+  <!-- ✅ Correct hero image -->
+  <img src="assets/hero.svg" class="hero-img">
+</section>
+
+<section class="features">
+
+  <!-- ✅ Smart Payments -->
+  <div class="card shine">
+    <img src="assets/payment.svg" class="card-img">
+    <h3>Smart Payments</h3>
+    <p>UPI + Cards in one place</p>
+  </div>
+
+  <!-- ✅ Dashboard -->
+  <div class="card shine">
+    <img src="assets/dashboard.svg" class="card-img">
+    <h3>Live Dashboard</h3>
+    <p>Track transactions</p>
+  </div>
+
+  <!-- ✅ Automation -->
+  <div class="card shine">
+    <img src="assets/automation.svg" class="card-img">
+    <h3>Automation</h3>
+    <p>Auto status & alerts</p>
+  </div>
+<!-- 📷 QR Scanner Section -->
+<h2>Scan & Pay</h2>
+
+<video id="preview" style="width:300px;"></video>
+
+<button onclick="startScanner()">Start Scanner</button>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+function startScanner() {
+  const html5QrCode = new Html5Qrcode("preview");
+
+  html5QrCode.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    (decodedText) => {
+      // 👉 Redirect to payment page with ID
+      window.location.href = "pay.html?id=" + decodedText;
+    }
+  );
+}
+</script>
+
+
+</section>
+
+<footer class="footer">
+  <p>© 2026 StableFin</p>
+</footer>
+
+</body>
+</html>

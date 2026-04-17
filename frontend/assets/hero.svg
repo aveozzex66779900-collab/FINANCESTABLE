@@ -1,0 +1,7 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="200" fill="#0f172a"/>
+  <circle cx="150" cy="100" r="60" fill="#22c55e"/>
+  <text x="50%" y="50%" text-anchor="middle" fill="white" dy=".3em">
+    Payment
+  </text>
+</svg>

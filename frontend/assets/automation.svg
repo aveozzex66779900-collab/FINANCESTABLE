@@ -1,0 +1,7 @@
+<svg width="200" height="150" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="150" fill="#0f172a"/>
+  <circle cx="100" cy="75" r="40" fill="#38bdf8"/>
+  <text x="100" y="80" text-anchor="middle" fill="white">
+    Auto
+  </text>
+</svg>

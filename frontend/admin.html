@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<!-- 🔐 ADMIN PROTECTION -->
+<script>
+  const role = localStorage.getItem("role");
+  if(role !== "admin"){
+    alert("Access Denied ❌");
+    window.location.href = "admin-login.html";
+  }
+</script>
+
+<div class="dashboard">
+
+  <h1>💼 Admin Dashboard</h1>
+   <h2>Users</h2>
+
+<input id="newEmail" placeholder="Email">
+<input id="newPassword" placeholder="Password">
+<button onclick="addUser()">Add User</button>
+
+
+<div id="userList" style="color:white;"></div>
+
+
+  <!-- 🔥 CARDS -->
+  <div class="cards">
+    <div class="card">
+      <h3>Total Users</h3>
+      <p id="totalUsers">0</p>
+    </div>
+
+    <div class="card">
+      <h3>Total Revenue</h3>
+      <p>₹0</p>
+    </div>
+
+    <div class="card">
+      <h3>Transactions</h3>
+      <p>0</p>
+    </div>
+  </div>
+
+  <!-- 📊 CHART -->
+  <canvas id="userChart"></canvas>
+
+  <!-- 👥 USERS TABLE -->
+  <h2>Users</h2>
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Role</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

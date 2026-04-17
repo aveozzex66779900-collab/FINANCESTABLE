@@ -1,0 +1,15 @@
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+
+  <rect width="300" height="200" rx="20" fill="#1e293b"/>
+
+  <rect x="40" y="60" width="220" height="80" rx="10" fill="#0ea5e9"/>
+
+  <circle cx="220" cy="100" r="12" fill="#facc15"/>
+
+  <circle cx="200" cy="100" r="12" fill="#f97316"/>
+
+  <text x="50%" y="50%" text-anchor="middle" fill="white" dy=".3em" font-size="16">
+    Secure Pay
+  </text>
+
+</svg>

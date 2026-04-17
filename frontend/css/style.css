@@ -1,0 +1,676 @@
+body {
+  font-family: Arial;
+  margin:0;
+  background:#f5f7fb;
+}
+
+/* Navbar */
+.navbar {
+  display:flex;
+  justify-content:space-between;
+  padding:20px;
+  background:#0f172a;
+  color:white;
+}
+
+/* Hero */
+.hero {
+  display:flex;
+  justify-content:space-between;
+  padding:60px;
+}
+
+.hero-img {
+  width:350px;
+}
+
+/* Buttons */
+button, .btn {
+  background:linear-gradient(45deg,#1a73e8,#00c6ff);
+  color:white;
+  border:none;
+  padding:10px 20px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.btn-big {
+  padding:15px 30px;
+  font-size:18px;
+}
+
+/* Features */
+.features {
+  display:flex;
+  justify-content:center;
+}
+
+.card {
+  background:white;
+  padding:20px;
+  margin:15px;
+  border-radius:12px;
+  text-align:center;
+  transition:0.3s;
+}
+
+.card:hover {
+  transform:translateY(-10px);
+}
+
+/* Shine */
+.shine::after {
+  content:"";
+  position:absolute;
+}
+
+/* Auth */
+.center {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.auth-box {
+  background:white;
+  padding:30px;
+  border-radius:10px;
+  width:250px;
+}
+
+input {
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+}
+
+/* Dashboard */
+.sidebar {
+  width:200px;
+  height:100vh;
+  position:fixed;
+  background:#0f172a;
+  color:white;
+  padding:20px;
+}
+
+.main {
+  margin-left:220px;
+  padding:20px;
+}
+
+.grid {
+  display:flex;
+}
+
+.box {
+  background:white;
+  padding:20px;
+  margin:10px;
+  border-radius:10px;
+}
+
+/* Footer */
+.footer {
+  text-align:center;
+  padding:20px;
+}
+/* FIX IMAGE + HERO LAYOUT */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.hero-img {
+  width: 400px;
+  max-width: 100%;
+}
+/* Sections */
+.section {
+  margin-bottom: 40px;
+}
+
+/* Payment cards */
+.payment-grid {
+  display:flex;
+  gap:20px;
+}
+
+.pay-card {
+  background:white;
+  padding:30px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.3s;
+  width:200px;
+}
+
+.pay-card:hover {
+  transform:scale(1.05);
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* Sidebar links */
+.sidebar a {
+  display: block;
+  color: white;
+  margin: 10px 0;
+}
+/* Transactions */
+#txList {
+  background:white;
+  padding:15px;
+  border-radius:10px;
+}
+.navbar a {
+  margin-left: 15px;
+  color: white;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+.dashboard {
+  padding: 20px;
+  margin-left: 220px;
+}
+
+.cards {
+  display: flex;
+  gap: 20px;
+}
+
+.card {
+  background: #202124;
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+  flex: 1;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid #333;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+}
+
+canvas {
+  margin-top: 30px;
+  background: white;
+  border-radius: 10px;
+}
+.payment-box {
+  background: #202124;
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+  width: 300px;
+  margin-top: 20px;
+}
+
+.payment-box input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 6px;
+}
+input {
+  font-size: 14px;
+}
+
+#cardNumber {
+  letter-spacing: 2px;
+}
+body {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+}
+
+/* HERO */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px;
+  margin-bottom: 20px;
+}
+
+
+
+.hero-text h1 {
+  font-size: 32px;
+  background: linear-gradient(90deg, #00f2fe, #4facfe);
+
+  /* Standard + Webkit */
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.hero-text p {
+  opacity: 0.8;
+}
+
+.hero-img img {
+  width: 250px;
+  border-radius: 20px;
+}
+
+/* PAYMENT CARDS */
+.payment-box {
+  background: rgba(255,255,255,0.05);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+  transition: 0.3s;
+}
+
+.payment-box:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* BUTTONS */
+button {
+  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1);
+}
+
+/* INPUT */
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  border: none;
+}
+.hero-img img {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  margin-bottom: 30px;
+}
+
+.hero-text {
+  max-width: 50%;
+}
+
+.hero-img img {
+  width: 300px;
+  border-radius: 20px;
+}
+.hero-text h1 {
+  font-size: 34px;
+  background: linear-gradient(90deg, #00f2fe, #4facfe);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+
+  text-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+}
+.card {
+  background: rgba(255,255,255,0.08);
+  padding: 15px;
+  border-radius: 12px;
+  margin: 10px 0;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+}
+.main {
+  display: flex;
+  gap: 30px;
+}
+
+.left {
+  width: 40%;
+}
+
+.right {
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.hero-img {
+  width: 320px;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+.hero-img {
+  width: 320px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+body {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Glass cards */
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+/* Button */
+button {
+  background: linear-gradient(45deg, #00f5ff, #007bff);
+  border: none;
+  padding: 12px 20px;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1);
+}
+
+/* Popup */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.7);
+}
+
+.popup-box {
+  background: #111;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.5); }
+  to { transform: scale(1); }
+}
+
+.hidden {
+  display: none;
+}
+.card-img {
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+
+
+.ai-btn {
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.ai-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+button {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg,#007bff,#00c6ff);
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.ai-security-box{
+  margin-top:20px;
+  padding:20px;
+  border-radius:15px;
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:white;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+.ai-security-box button{
+  margin:5px;
+  padding:10px 15px;
+  border:none;
+  border-radius:10px;
+  background:#00c6ff;
+  color:white;
+  cursor:pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 🔥 PREMIUM UPGRADE (SAFE ADD) */
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* auto convert your existing boxes into cards */
+div[class*="payment"], 
+div[class*="dashboard"], 
+div[class*="box"] {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* inputs upgrade */
+input, select {
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
+  margin: 8px 0;
+}
+
+/* buttons upgrade */
+button {
+  background: linear-gradient(135deg, #06b6d4, #3b82f6);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(59,130,246,0.6);
+}
+
+/* transaction styling */
+#transactionList div {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+div {
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+
+
+
+
+
+/* 🤍 PREMIUM WHITE BACKGROUND */
+
+body {
+  background: linear-gradient(135deg, #f8fafc, #eef2f7);
+  color: #111;
+}
+
+/* container */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* 🧾 Cards */
+div[class*="payment"], 
+div[class*="dashboard"], 
+div[class*="box"] {
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 
+    0 4px 20px rgba(0,0,0,0.05),
+    0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* inputs */
+input, select {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #111;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* buttons */
+button {
+  background: #111;
+  color: white;
+  border-radius: 10px;
+  padding: 10px 16px;
+  border: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #333;
+  transform: translateY(-2px);
+}
+
+/* transactions */
+#transactionList div {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}

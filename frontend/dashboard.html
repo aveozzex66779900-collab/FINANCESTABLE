@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+
+  <!-- ✅ ADD THIS (fix CSP issue) -->
+  <meta http-equiv="Content-Security-Policy" 
+  content="default-src * 'self' data: blob:; img-src * data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';">
+
+  <!-- ✅ ADD THIS (fix favicon error) -->
+  <link rel="icon" href="data:,">
+
+
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<body>
+
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+
+  <h1>Payments Dashboard</h1>
+
+  <button onclick="window.location.href='ai-features.html'" class="ai-btn">
+    🤖 AI Features
+  </button>
+
+</div>
+
+  <h3>🤖 AI Financial Advisor</h3>
+
+<button onclick="getAdvice()">Get AI Advice</button>
+
+<pre id="aiAdvice"></pre>
+<section id="b2b" class="card">
+  <h2>💼 B2B Payments (Enterprise)</h2>
+
+  <p>Send bulk payments, international transfers, and manage business payouts.</p>
+
+  <input id="b2bEmail" placeholder="Recipient Email / Company">
+  <input id="b2bAmount" placeholder="Amount" type="number">
+  <select id="currency">
+    <option value="INR">INR</option>
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+  </select>
+
+  <button onclick="sendB2B()">Send Payment</button>
+
+  <h4 id="b2bResult"></h4>
+</section>
+
+  <div class="hero">
+  <div class="hero-text">
+    <h1>💸 Smart Payments Dashboard</h1>
+    <p>Send, Receive, Track payments like Stripe, Google Pay & Bybit</p>
+  </div>
+
+  <div class="hero-img">
+    <img src="assets/payment.svg" class="hero-img">
+  </div>
+</div>
+  
+
+
+<div class="payment-box">
+  <h2>💸 UPI Payment</h2>
+
+  <input id="upiId" placeholder="Enter UPI ID" />
+  <input id="amount" placeholder="Enter Amount" />
+
+  <button onclick="payUPI()">Pay UPI</button>
+</div>
+
+<h3>Transactions</h3>
+<div id="transactionsList"></div>
+
+
+
+
+
+  <div class="card">
+  💰 Revenue: ₹<span id="revenue">0</span>
+</div>
+
+<div class="card">
+  👤 Users: <span id="users">0</span>
+</div>
+
+<div class="card">
+  💳 Payments: <span id="payments">0</span>
+</div>
+  <h2>💳 Card Payment</h2>
+
+  <input id="cardNumber" placeholder="Card Number (1234 5678 9012 3456)">
+  
+  <input id="cardName" placeholder="Card Holder Name">
+  
+  <div style="display:flex; gap:10px;">
+    <input id="cardExpiry" placeholder="MM/YY">
+    <input id="cardCVV" placeholder="CVV">
+  </div>
+
+  <input id="cardAmount" type="number" placeholder="Enter Amount">
+
+  <button onclick="payCard()">Pay with Card</button>
+
+</div>
+<h2>Transactions</h2>
+
+<button onclick="downloadCSV()">Download CSV</button>
+
+<ul id="txList"></ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="payment-box">
+
+  <h2>🪙 Crypto Payment</h2>
+  
+  <select id="cryptoType">
+    <option value="BTC">Bitcoin (BTC)</option>
+    <option value="ETH">Ethereum (ETH)</option>
+    <option value="USDT">USDT</option>
+  </select>
+
+  <input id="cryptoAmount" type="number" placeholder="Enter Amount">
+  <button onclick="payCrypto()">Pay with Crypto</button>
+
+
+  <button onclick="generateCrypto()">Generate Address</button>
+  
+  <p id="cryptoAddress"></p>
+  <div id="cryptoQR"></div>
+
+</div>
+<div class="sidebar">
+    <a onclick="showSection('ai')">
+  AI Analytics 
+</a>
+
+  <h2>StableFin</h2>
+  <a onclick="showSection('dashboard')">Dashboard</a>
+  <a onclick="showSection('payments')">Payments</a>
+  <a onclick="showSection('admin')">Admin</a>
+  <a onclick="showSection('ai')">AI Features</a>
+  <a onclick="showSection('fraud')">Fraud Monitor</a>
+  <a onclick="showSection('payments')">Payments</a>
+  
+  
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<h2>Transactions</h2>
+
+<div id="userList" style="
+  background:#111;
+  color:white;
+  padding:10px;
+  border-radius:8px;
+"></div>
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="section">
+  <h1>Overview</h1>
+
+  <div class="grid">
+    <div class="box">
+      <h3>Total Revenue</h3>
+      <p id="revenue">₹0</p>
+    </div>
+
+    <div class="box">
+      <h3>Total Transactions</h3>
+      <p id="count">0</p>
+    </div>
+    <div id="ai" style="display:none;">
+
+    <button onclick="showSection('aiAnalytics')" 
+style="padding:10px; margin-top:20px;">
+  🤖 AI Analytics
+</button> 
+  <h2>🤖 AI Features</h2>
+  <p>AI portfolio optimization & financial advice.</p>
+</div>
+
+<div id="fraud" style="display:none;">
+  <h2>🚨 Fraud Monitor</h2>
+  <p>Live fraud detection coming here.</p>
+</div>
+
+
+
+
+
+<div id="payments" style="display:none;">
+  <h2>💳 Payments</h2>
+  <p>UPI / Card payments section.</p>
+</div>
+<div style="margin-top:20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px;">
+
+  <div style="background:white; padding:20px; border-radius:10px;">
+    <h3>💰 Balance</h3>
+    <p>₹50,000</p>
+  </div>
+
+  <div style="background:white; padding:20px; border-radius:10px;">
+    <h3>📊 Transactions</h3>
+    <p>24 this week</p>
+  </div>
+
+  <div style="background:white; padding:20px; border-radius:10px;">
+    <h3>🚨 Risk</h3>
+    <p style="color:green;">Low</p>
+  </div>
+  <div id="aiAnalytics" style="display:none; padding:20px;">
+
+  <h2>🤖 AI Analytics</h2>
+
+  <!-- Fraud -->
+  <div style="background:white; padding:15px; margin-bottom:20px;">
+    <h3>🚨 Fraud Detection</h3>
+    <button onclick="checkFraud()">Check Fraud</button>
+    <p id="fraudResult"></p>
+  </div>
+
+  <!-- Portfolio -->
+  <div style="background:white; padding:15px;">
+    <h3>📊 Portfolio Optimization</h3>
+    <button onclick="optimizePortfolio()">Optimize</button>
+    <p id="portfolioResult"></p>
+  </div>
+
+</div>
+</div> 
+
+  </div>
+</div>
+
+<!-- PAYMENTS -->
+<div id="payments" class="section" style="display:none;">
+  <h1>Payments</h1>
+
+  <div class="payment-grid">
+    <div class="pay-card" onclick="payUPI()">
+      <h3>📱 UPI Payment</h3>
+      <p>Google Pay / PhonePe</p>
+    </div>
+
+    <div class="pay-card" onclick="payCard()">
+      <h3>💳 Card Payment</h3>
+      <p>Visa / Mastercard</p>
+    </div>
+  </div>
+
+  <h2>Transactions</h2>
+  <ul id="txList"></ul>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="section" style="display:none;">
+  <h1>Admin Panel</h1>
+
+  <button onclick="getUsers()">Users</button>
+  <button onclick="getPayments()">Payments</button>
+
+  <pre id="adminData"></pre>
+</div>
+<div id="ai" class="section" style="display:none;">
+  <h2>AI Fraud & Portfolio Optimization</h2>
+
+  <div style="background:white; padding:20px; margin-top:10px; border-radius:10px;">
+    
+    <h3>🔍 Fraud Detection</h3>
+    <button onclick="checkFraud()">Check Fraud</button>
+    <pre id="fraudResult"></pre>
+
+    <hr>
+
+    <h3>📈 Portfolio Optimization</h3>
+    <button onclick="optimizePortfolio()">Optimize Portfolio</button>
+    <pre id="portfolioResult"></pre>
+
+  </div>
+</div>
+
+
+
+
+
+<script>
+
+function showSection(id) {
+  const sections = ["dashboard", "ai", "fraud", "payments"];
+
+  sections.forEach(sec => {
+    const el = document.getElementById(sec);
+    if (el) el.style.display = "none";
+  });
+
+  const active = document.getElementById(id);
+  if (active) active.style.display = "block";
+}
+
+// ✅ Fraud Detection API
+async function checkFraud() {
+  try {
+    const res = await ("http://localhost:8000/predict", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ amount: 5000 })
+    });
+
+    const data = await res.json();
+    document.getElementById("fraudResult").innerText =
+      JSON.stringify(data, null, 2);
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("fraudResult").innerText = "Error connecting API";
+  }
+}
+
+// ✅ Portfolio Optimization API
+async function optimizePortfolio() {
+  try {
+    const res = await ("http://localhost:8000/portfolio", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ budget: 10000 })
+    });
+
+    const data = await res.json();
+    document.getElementById("portfolioResult").innerText =
+      JSON.stringify(data, null, 2);
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("portfolioResult").innerText = "Error connecting API";
+  }
+}
+
+</script>
+
+
+<script src="js/app.js"></script>
+
+</body>
+</html>

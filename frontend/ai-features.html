@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>StableFin AI Dashboard</title>
+  <link rel="icon" href="data:,">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin:0;
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+    }
+
+    .navbar {
+      background: #020617;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .navbar a {
+      color: #38bdf8;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 30px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: #111827;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #22c55e;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover { background: #16a34a; }
+
+    canvas {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="navbar">
+  <h2>🤖 StableFin AI</h2>
+  <div>
+    <a href="index.html">Dashboard</a>
+  <a href="#b2b">B2B Pay</a> <!-- NEW -->
+
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- 📊 Portfolio Optimization -->
+  <div class="card">
+    <h3>📊 AI Portfolio Optimization</h3>
+    <p>Optimize investments using AI</p>
+
+    <button onclick="runPortfolio()">Run Optimization</button>
+
+    <canvas id="portfolioChart"></canvas>
+  </div>
+
+  <!-- 🚨 Fraud Detection -->
+  <div class="card">
+    <h3>🚨 AI Fraud Detection</h3>
+    <p>Check transaction risk score</p>
+
+    <input id="amount" placeholder="Enter amount" type="number">
+
+    <button onclick="checkFraud()">Check Fraud</button>
+    
+    <h4 id="fraudResult"></h4>
+  </div>
+
+</div>
+
+<script>
+/* 📊 Portfolio Chart */
+const ctx = document.getElementById('portfolioChart');
+
+let chart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ["Stocks", "Crypto", "Gold"],
+    datasets: [{
+      label: "Investment %",
+      data: [40, 30, 30]
+    }]
+  }
+});
+
+/* 🚀 Run Portfolio Optimization */
+function runPortfolio() {
+  // Simulated AI response
+  const data = [50, 20, 30];
+
+  chart.data.datasets[0].data = data;
+  chart.update();
+
+  alert("Portfolio Optimized ✅");
+}
+
+/* 🚨 Fraud Detection */
+async function checkFraud() {
+  const amount = document.getElementById("amount").value;
+
+  const res = await ("http://localhost:8000/predict", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ amount: Number(amount), transactions: 1 })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("fraudResult").innerText =
+    data.fraud ? "🚨 Fraud Detected (Risk: " + data.riskScore + ")" :
+                 "✅ Safe (Risk: " + data.riskScore + ")";
+}
+
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>
