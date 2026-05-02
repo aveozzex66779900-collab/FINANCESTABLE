@@ -1074,8 +1074,14 @@ app.get("/api/user/profile", async (req, res) => {
   try {
     const email = req.query.email;
 
-    const user = await User.findOne({ email });
+    
+    
 
+
+
+    const user = await User.findOne({
+  email: String(email)
+});
     res.json(user);
 
   } catch (err) {
@@ -1148,7 +1154,7 @@ app.get("/admin/analytics", async (req, res) => {
 app.get("/api/balance", async (req, res) => {
   const email = req.query.email;
 
-  const last = await Ledger.findOne({ email }).sort({ createdAt: -1 });
+  const last = await Ledger.findOne(  { email: String(email) }).sort({ createdAt: -1 });
 
   res.json({
     balance: last ? last.balance : 0
@@ -1157,7 +1163,7 @@ app.get("/api/balance", async (req, res) => {
 app.get("/api/ledger", async (req, res) => {
   const email = req.query.email;
 
-  const data = await Ledger.find({ email }).sort({ createdAt: -1 });
+  const data = await Ledger.find(  { email: String(email) }).sort({ createdAt: -1 });
 
   res.json(data);
 });
