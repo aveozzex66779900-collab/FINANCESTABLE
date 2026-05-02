@@ -1,44 +1,33 @@
 
 
 
+import mongoose from "mongoose";
 
-import mongoose, { Schema, Document } from "mongoose";
+const userSchema = new mongoose.Schema({
+  name: String,
 
-export interface IUser extends Document {
-  email: string;
-  password: string;
-  role: "user" | "admin";
-  isBlocked: boolean; // ✅ ADD THIS
-  createdAt: Date;
-}
-
-const UserSchema: Schema = new Schema(
-  {
-    email: {
-      type: String,
-      required: true,
-      unique: true
-    },
-    password: {
-      type: String,
-      required: true
-    },
-    role: {
-      type: String,
-      enum: ["user", "admin"],
-      default: "user"
-    },
-    isBlocked: {          // ✅ ADD THIS BLOCK
-      type: Boolean,
-      default: false
-    }
+  email: {
+    type: String,
+    unique: true
   },
-  {
-    timestamps: true
+
+  password: String,
+
+  wallet: {
+    balance: { type: Number, default: 0 }
+  },
+
+  bank: {
+    accountNumber: String,
+    ifsc: String
+  },
+
+  // 🔥 ADD THIS
+  role: {
+    type: String,
+    default: "user"
   }
-);
 
-export default mongoose.model<IUser>("User", UserSchema);
+}, { timestamps: true });
 
-
-
+export default mongoose.model("User", userSchema);

@@ -2,13 +2,13 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt"; 
+import adminUsersRoutes from "./adminUsers";
 import jwt from "jsonwebtoken";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
 import { audit } from "./middleware/audit";
-import { errorHandler } from "./middleware/error";
 import { addToQueue, processQueue } from "./services/queue";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -18,51 +18,363 @@ import User from "./models/User";
 
 
 
+
+import Transaction from "./models/transaction";
 import authRoutes from "./routes/auth";
 import aiRoutes from "./routes/ai";
+import dotenv from "dotenv";
+
+
+import morgan from "morgan";
+import { logger } from "./utils/logger";
+
+import client from "prom-client";
+import { globalErrorHandler } from "./middleware/errorHandler";
+import { Ledger } from "./models/ledger";
+import redis from "./redis";// import Redis from "redis";
+import dashboardTransactions from "./dashboardTransactions";
+import aiSafeRoutes from "./routes/ai-safe";
+import premiumAI from "./routes/ai-premium";
+
+
+
+dotenv.config();
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
+
 app.use(express.json());
 
-app.get("/api/transactions", async (req, res) => {
+app.use("/admin", adminUsersRoutes);
+app.use("/", dashboardTransactions);
+app.use("/", aiSafeRoutes);
+app.use(
+  "/api/premium-ai",
+  premiumAI
+);
 
+
+
+
+function normalizeWallet(user: any) {
+  if (!user.wallet || typeof user.wallet === "number") {
+    user.wallet = { balance: user.wallet || 0 };
+  }
+}
+app.use(express.urlencoded({ extended: true }));
+
+
+
+
+
+
+
+
+
+// ================= SIGNUP =================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.post("/api/auth/signup", async (req, res) => {
   try {
-    const email = req.query.email;
+    const { name, email, password } = req.body;
 
-    const transactions = await Transaction.find({ email });
+    // 🔐 HASH PASSWORD
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    res.json(transactions);
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword
+    });
+
+    await user.save();
+
+    res.json({ success: true });
+
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.error(err);
+    res.json({ success: false, message: "Signup failed" });
   }
 });
 
-const port = 5000
-app.use(express.json());
-app.use("/", authRoutes);
+// ✅ ADD THIS ABOVE ROUTES
+const authMiddleware = (req: any, res: any, next: any) => {
+  try {
+    const authHeader = req.headers.authorization;
 
-app.get("/", (req, res) => {
-  res.send("Backend running ✅");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "No token"
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+
+    req.user = decoded;
+
+    next();
+  } catch (err) {
+    console.error("AUTH ERROR:", err);
+
+    return res.status(401).json({
+      success: false,
+      message: "Invalid token"
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.get("/metrics-prometheus", async (req, res) => {
+  res.set("Content-Type", client.register.contentType);
+  res.end(await client.register.metrics());
 });
 
-app.use(helmet());
+let requestCount = 0;
 
-app.use(rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100
-}));
-
-log("Server started");
-log("Payment request received");
 app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src 'self' http://127.0.0.1:5500 http://localhost:5500 data: blob:; img-src * data: blob:; media-src * data: blob:;"
-  );
+  requestCount++;
   next();
 });
 
+app.get("/metrics", (req, res) => {
+  res.json({
+    totalRequests: requestCount
+  });
+});
+app.get("/health", async (req, res) => {
+  res.json({
+    status: "OK",
+    uptime: process.uptime(),
+    timestamp: new Date(),
+    memory: process.memoryUsage()
+  });
+});
+app.use(
+  morgan("combined", {
+    stream: {
+      write: (message) => logger.info(message.trim())
+    }
+  })
+);
+app.post("/webhook/payment", express.raw({ type: "*/*" }), async (req, res) => {
+  try {
+    const signature = req.headers["x-webhook-signature"];
+
+    // 🔐 OPTIONAL (recommended for production)
+    // verify signature here
+
+    const body = JSON.parse(req.body.toString());
+
+    console.log("📩 WEBHOOK RECEIVED:", body);
+
+    const { email, amount, type, status } = body;
+
+    if (!email || !amount) {
+      return res.status(400).send("Invalid webhook");
+    }
+
+    // ✅ Save verified transaction
+    const tx = await Transaction.create({
+      email,
+      amount,
+      method: "UPI",
+      type,
+      status: status || "success"
+    });
+
+    console.log("✅ VERIFIED & SAVED:", tx._id);
+
+    res.status(200).send("OK");
+
+  } catch (err) {
+    console.error("❌ WEBHOOK ERROR:", err);
+    res.status(500).send("Webhook failed");
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.get("/api/transactions", async (req, res) => {
+  try {
+    const email = req.query.email as string | undefined;
+
+    const filter: any = {};
+    if (email) filter.email = email;
+
+    const transactions = await Transaction.find(filter);
+
+    res.json({
+      success: true,
+      transactions
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.json({
+      success: false,
+      message: "Failed to load transactions"
+    });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.post("/api/transaction", async (req, res) => {
+  try {
+    console.log("🚀 B2B TRANSACTION START");
+
+    const { email, amount, type = "b2b", status = "SUCCESS" } = req.body;
+
+    console.log("📥 Incoming:", { email, amount });
+
+    // ✅ VALIDATION
+    if (!email || !amount || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email or amount"
+      });
+    }
+
+    // ✅ FIND USER (CRITICAL FIX)
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // ✅ CREATE TRANSACTION (FIXED userId)
+    const tx = await Transaction.create({
+      userId: user._id, // 🔥 THIS WAS MISSING
+      email,
+      amount,
+      type,
+      status
+    });
+
+    // =========================
+    // 🔥 LEDGER (SAFE ADD)
+    // =========================
+
+    const last = await Ledger.findOne({ userId: user._id }).sort({ createdAt: -1 });
+
+    const prevBalance = last ? last.balance : 0;
+    const newBalance = prevBalance - amount;
+
+    await Ledger.create({
+      userId: user._id,
+      email,
+      amount,
+      type: "DEBIT",
+      category: type,
+      balance: newBalance,
+      referenceId: tx._id
+    });
+
+    console.log("✅ TRANSACTION SUCCESS:", tx._id);
+
+    // ✅ RESPONSE (EXTENDED, NOT BREAKING)
+    res.json({
+      success: true,
+      transactionId: tx._id,
+      email,
+      amount,
+      balance: newBalance
+    });
+
+  } catch (err) {
+    console.error("❌ TRANSACTION ERROR:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "Transaction DB failed",
+      debug: err.message // 👈 helps debugging
+    });
+  }
+});
 
 function detectFraud(userId: string, amount: number, history: any[]) {
 
@@ -82,14 +394,7 @@ function detectFraud(userId: string, amount: number, history: any[]) {
   };
 }
 const Stripe = require("stripe");
-const stripe = new Stripe("sk_test_xxxxxxxxx");
-
-// ✅ FIX CORS PROPERLY (IMPORTANT)
-app.use(cors({
-  origin: "http://127.0.0.1:5500",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
+const stripe = new Stripe(process.env.STRIPE_KEY);
 
 
 
@@ -98,114 +403,115 @@ app.use(cors({
 
 
 
-mongoose.connect(
-  "mongodb+srv://admin:admin123@cluster0.geok0a5.mongodb.net/FINANCESTABLE"
-)
-.then(() => console.log("MongoDB Connected ✅"))
-.catch(err => console.log("DB Error ❌", err));
-
-  // ✅ START SERVER ONLY AFTER DB CONNECTS
-  app.listen(5000, () => {
-    console.log("🚀 Server running on http://localhost:5000");
-  });
 
 
+mongoose.connect(process.env.MONGO_URI!)
+  .then(() => {
+    console.log("MongoDB Connected ✅");
 
+    app.listen(5000, () => {
+      console.log("🚀 Server running on http://localhost:5000");
+    });
+  })
+  .catch(err => console.log("DB Error ❌", err));
 
 
 
-// ✅ NEW routes (ADD ONLY)
-app.use("/api/auth", authRoutes);
-app.use("/api", aiRoutes);
 
-// ✅ User Model
-const userSchema = new mongoose.Schema({
-  email: String,
-  password: String,
-  role: { type: String, default: "user" }
-});
+
+
+
+
 
 
 
 
 // 💾 Transaction Model (ADD HERE)
 
-const transactionSchema = new mongoose.Schema({
-  email: String,
-  amount: Number,
-  method: String, // UPI / CRYPTO
-  type: String,   // BTC / ETH / UPI
-  status: String,
-  date: {
-    type: Date,
-    default: Date.now
-  }
-});
-const Transaction = mongoose.model("Transaction", transactionSchema);
+
+
+
+
+
 /* TEST */
 app.get("/test", (req, res) => {
   res.json({ msg: "Backend working" });
 });
 
-app.post("/signup", async (req, res) => {
+
+
+
+
+
+
+app.post("/api/add-bank", async (req, res) => {
   try {
-    console.log("Signup API HIT", req.body);
+    const { email, upiId, accountNumber, ifsc, bankName } = req.body;
 
-    const user = new User(req.body);
-    await user.save();
-
-    console.log("User saved ✅");
+    await User.findOneAndUpdate(
+      { email: email },
+      {
+        bank: {
+          upiId,
+          accountNumber,
+          ifsc,
+          bankName
+        }
+      }
+    );
 
     res.json({ success: true });
+
   } catch (err) {
-    console.log("Signup Error ❌", err);
-    res.json({ success: false });
+    console.error("BANK ERROR:", err);
+    res.status(500).json({ success: false });
   }
 });
-
-
-
-
   
 /* PAYMENTS */
 
 
 
-
-app.post("/pay-upi", (req, res) => {
+app.post("/pay-upi", async (req, res) => {
   try {
-    // ✅ req is available HERE
-    const { amount, userId } = req.body;
+    const { email, amount } = req.body;
 
-    addToQueue({
-      type: "PAYMENT",
+    if (!email || !amount) {
+      return res.json({ success: false, message: "Missing data" });
+    }
+
+    // 🕒 Save as pending
+    const tx = await Transaction.create({
+      email,
       amount,
-      userId
+      method: "UPI",
+      type: "upi",
+      status: "pending"
     });
 
-    audit(userId, "UPI_PAYMENT");
+    // ⚡ Simulate gateway webhook (DEV ONLY)
+    setTimeout(async () => {
+      await fetch("http://localhost:5000/webhook/payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          amount,
+          type: "upi",
+          status: "success"
+        })
+      });
+    }, 2000);
 
-    res.json({ success: true });
+    res.json({
+      success: true,
+      message: "Payment initiated"
+    });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ success: false });
   }
 });
-app.get("/pay-upi", (req, res) => {
-  res.json({
-    success: true,
-    message: "UPI Payment Success ✅"
-  });
-});
-
-
-
-/* ADMIN */
-app.get("/admin/users", (req, res) => {
-  res.json([{ email: "test@gmail.com" }]);
-});
-
 app.get("/admin/payments", (req, res) => {
   res.json([{ amount: 100, status: "success" }]);
 });
@@ -215,42 +521,85 @@ app.get("/admin/payments", (req, res) => {
 
 
 
-app.get("/admin/users", async (req, res) => {
-  const users = await User.find();   // ✅ FIX
-  res.json(users);
-});
 
 
 
 
-app.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
 
-    console.log("LOGIN INPUT:", email, password);
 
-    const user = await User.findOne({ email });
 
-    console.log("FOUND USER:", user);
 
-    if (!user) {
-      return res.json({ success: false });
-    }
 
-    if (user.password !== password) {
-      return res.json({ success: false });
-    }
 
-    res.json({
-      success: true,
-      role: user.role
-    });
 
-  } catch (err) {
-    console.log("LOGIN ERROR:", err);
-    res.json({ success: false });
+
+
+
+// 🔐 NEW LOGIN ROUTE (API STYLE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ================= LOGIN =================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.post("/api/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.json({ success: false, message: "User not found" });
   }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    return res.json({ success: false, message: "Wrong password" });
+  }
+
+  // ✅ RETURN REAL ROLE FROM DB
+  res.json({
+    success: true,
+    role: user.role || "user"
+  });
 });
+
 app.post("/crypto-address", async (req, res) => {
   const { type, amount } = req.body;
 
@@ -290,98 +639,126 @@ app.get("/transactions/download", async (req, res) => {
   }
 });
 
-app.post("/b2b-pay", async (req, res) => {
-  try {
-    const { email, amount, currency } = req.body;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+console.log("✅ B2B ROUTE LOADED");
+
+
+app.post("/api/b2b/pay", async (req, res) => {
+
+  try {
+
+    const {
+      email,
+      amount,
+      currency,
+      userId
+    } = req.body;
+
+    // ✅ validation
     if (!email || !amount) {
-      return res.json({ success: false });
+      return res.status(400).json({
+        success: false,
+        message: "Missing fields"
+      });
     }
 
-    console.log(`🏦 B2B Payment → ${email} | ${amount} ${currency}`);
+    // ✅ create transaction
+    const tx = await Transaction.create({
 
-    // Simulate FX conversion
-    let converted = amount;
-    if (currency === "USD") converted = amount * 83;
-    if (currency === "EUR") converted = amount * 90;
+      userId: userId || "guest",
 
-    // Save transaction (optional)
-    // await Transaction.create({ email, amount, currency, converted });
+      email,
 
-    return res.json({
-      success: true,
-      convertedAmount: converted
+      amount,
+
+      status: "success",
+
+      method: "B2B",
+
+      type: "enterprise",
+
+      paymentId:
+        "B2B-" + Date.now(),
+
+      currency:
+        currency || "INR"
+
     });
 
-  } catch (err) {
-    res.json({ success: false });
-  }
-});
+    console.log("✅ B2B PAYMENT:", tx);
 
-// ✅ CREATE DB TEST ROUTE
+    res.json({
+      success: true,
+      message: "B2B payment success",
+      transaction: tx
+    });
+
+  } catch (err: any) {
+
+    console.error("❌ B2B ERROR:", err);
+
+    res.status(500).json({
+      success: false,
+      message: "B2B payment failed",
+      error: err.message
+    });
+
+  }
+
+});
 app.get("/create-db", async (req, res) => {
   try {
+    const hashedPassword = await bcrypt.hash("123456", 10);
+
     const user = new User({
       name: "Shanu",
       email: "test@test.com",
-      password: "123456"
+      password: hashedPassword
     });
 
     await user.save();
 
     res.send("Database Created ✅");
   } catch (err) {
-    console.log(err);
     res.send("Error ❌");
   }
 });
-
-
-
-
-
-// 💰 SAVE TRANSACTION API
-app.post("/api/transaction", async (req, res) => {
+app.post("/crypto", authMiddleware, async (req: any, res) => {
   try {
-    const { email, amount, status } = req.body;
-
-    const transaction = {
-      email,
-      amount,
-      status,
-      date: new Date()
-    };
-
-    // create collection if not exists
-    const db = mongoose.connection.db;
-
-    await db.collection("transactions").insertOne(transaction);
-
-    res.json({ success: true });
-
-  } catch (err) {
-    console.error("Transaction error:", err);
-    res.status(500).json({ error: "Failed to save transaction" });
-  }
-});
-
-app.get("/api/transactions", async (req, res) => {
-  try {
-    const transactions = await Transaction.find().sort({ date: -1 });
-    res.json(transactions);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch transactions" });
-  }
-});
-app.post("/crypto", async (req, res) => {
-  try {
-    const { type, amount, email } = req.body;
+    const { type, amount } = req.body;
 
     const tx = await Transaction.create({
-      email,
       amount,
-      method: "CRYPTO", // 🔥 REQUIRED
       type,
+      userId: req.user.id,
+      method: "CRYPTO",
       status: "success"
     });
 
@@ -390,81 +767,6 @@ app.post("/crypto", async (req, res) => {
       message: "Crypto payment successful",
       data: tx
     });
-
-  } catch (err) {
-    res.status(500).json({ success: false });
-  }
-});
-
-app.get("/create-admin", async (req, res) => {
-  const user = await User.create({
-    email: "admin@gmail.com",
-    password: "123456",
-    role: "admin"
-  });
-
-  res.json(user);
-});
-
-app.get("/admin/users", async (req, res) => {
-  const users = await User.find();   // ✅ FIX
-  res.json(users);
-});
-
-app.post("/admin/add-user", async (req, res) => {
-  try {
-    console.log("👉 BODY:", req.body);
-
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      console.log("❌ Missing email or password");
-      return res.json({ success: false, message: "Missing fields" });
-    }
-
-    const existing = await User.findOne({ email });
-
-    if (existing) {
-      console.log("❌ User already exists");
-      return res.json({ success: false, message: "User exists" });
-    }
-
-    const newUser = new User({
-      email,
-      password,
-      role: "user"
-    });
-
-    await newUser.save();
-
-    console.log("✅ USER SAVED");
-
-    res.json({ success: true });
-
-  } catch (err) {
-    console.error("🔥 FULL ERROR:", err);
-    res.status(500).json({ success: false });
-  }
-});
-app.post("/admin/block-user", async (req, res) => {
-  try {
-    const { id } = req.body;
-
-    await User.findByIdAndUpdate(id, { isBlocked: true });
-
-    res.json({ success: true });
-
-  } catch (err) {
-    res.status(500).json({ success: false });
-  }
-});
-app.post("/admin/delete-user", async (req, res) => {
-  try {
-    const { id } = req.body;
-
-    await User.findByIdAndDelete(id);
-
-    res.json({ success: true });
 
   } catch {
     res.status(500).json({ success: false });
@@ -489,3 +791,391 @@ app.post("/admin/delete-user", async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+app.post("/api/pay", async (req, res) => {
+  try {
+    const { email, amount } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    normalizeWallet(user);
+
+    if (user.wallet.balance < amount) {
+      return res.json({
+        success: false,
+        message: "Insufficient balance"
+      });
+    }
+
+    // ✅ deduct
+    user.wallet.balance -= Number(amount);
+    await user.save();
+
+    // ✅ save transaction
+    await Transaction.create({
+      email,
+      amount,
+      method: "PAYMENT",
+      status: "success"
+    });
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.error("❌ PAY ERROR:", err);
+    res.json({ success: false });
+  }
+});
+
+
+
+
+
+
+
+
+
+    
+
+  
+
+
+
+
+
+
+app.get("/admin/users", async (req, res) => {
+
+  try {
+
+    const users = await User.find().sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      users
+    });
+
+  } catch (error) {
+
+    console.log("ADMIN USERS ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      users: []
+    });
+
+  }
+
+});
+
+app.get("/create-admin", async (req, res) => {
+  try {
+    const hashed = await bcrypt.hash("123456", 10);
+
+    const admin = await User.findOneAndUpdate(
+      { email: "admin@gmail.com" },
+      {
+        email: "admin@gmail.com",
+        password: hashed,
+        role: "admin"
+      },
+      { upsert: true, new: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Admin ensured",
+      admin
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+});
+
+app.post("/admin/add-user", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 10); // ✅ ADD
+
+    const user = new User({
+      email,
+      password: hashedPassword, // ✅ FIX
+      role: email === "admin@gmail.com" ? "admin" : "user",
+      wallet: { balance: 0 },
+      bank: {}
+    });
+    
+
+    
+
+
+    await user.save();
+
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+app.post("/admin/block-user", async (req, res) => {
+  try {
+    const { id } = req.body;
+    
+
+
+
+    await User.findByIdAndUpdate(
+  id,
+  { isBlocked: true },
+  { new: true }
+);
+
+    
+    res.json({ success: true });
+
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+app.post("/admin/delete-user", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    await User.findByIdAndDelete(id);
+
+    res.json({ success: true });
+
+  } catch {
+    res.status(500).json({ success: false });
+  }
+});
+
+
+
+app.post("/webhook/payment", async (req, res) => {
+  try {
+    const event: any = req.body;
+
+    const email = event.email;
+    const amount = event.amount;
+
+    // ✅ prevent duplicate
+    const exists = 
+await Transaction.findOne({
+  paymentId: event.id
+} as any);
+
+  
+    if (exists) {
+      return res.json({ ok: true });
+    }
+
+    // 💰 credit wallet
+    await User.findOneAndUpdate(
+      { email: email } as any,
+      { $inc: { "wallet.balance": amount } }
+    );
+
+    // 📊 save transaction
+    
+
+
+
+    await Transaction.create({
+  email,
+  amount,
+  method: "TOPUP",
+  status: "success",
+
+   
+  paymentId: "txn_" + Date.now()
+ 
+
+  
+});
+    res.json({ received: true });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error");
+  }
+});
+
+
+
+
+
+app.get("/api/users", async (req, res) => {
+
+  try {
+
+    const users = await User.find();
+
+    res.status(200).json({
+      success: true,
+      users
+    });
+
+  } catch (error) {
+
+    console.log("USERS LOAD ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to load users"
+    });
+
+  }
+
+});
+app.post("/api/user/update-profile", async (req, res) => {
+  try {
+    const { email, upiId, accountNumber, ifsc, bankName } = req.body;
+
+    await User.findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          "bank.upiId": upiId,
+          "bank.accountNumber": accountNumber,
+          "bank.ifsc": ifsc,
+          "bank.bankName": bankName
+        }
+      }
+    );
+
+    res.json({ success: true });
+
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+app.get("/api/user/profile", async (req, res) => {
+  try {
+    const email = req.query.email;
+
+    const user = await User.findOne({ email });
+
+    res.json(user);
+
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+
+
+
+
+
+app.get("/transactions", authMiddleware, async (req: any, res) => {
+
+  
+   
+
+
+  const data = await Transaction.find({
+  userId: String(req.user.id)
+} as any);
+  res.json(data);
+
+});
+// 🔥 GLOBAL ERROR HANDLER
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error("❌ GLOBAL ERROR:", err);
+
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error"
+  });
+});
+
+
+app.get("/admin/analytics", async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+
+    const transactions = await Transaction.find();
+
+    const totalTransactions = transactions.length;
+
+    const totalRevenue = transactions
+      .filter(t => t.status === "success")
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+    const successCount = transactions.filter(t => t.status === "success").length;
+
+    const successRate = totalTransactions
+      ? ((successCount / totalTransactions) * 100).toFixed(2)
+      : 0;
+
+    res.json({
+      success: true,
+      data: {
+        totalUsers,
+        totalTransactions,
+        totalRevenue,
+        successRate
+      }
+    });
+
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+
+app.get("/api/balance", async (req, res) => {
+  const email = req.query.email;
+
+  const last = await Ledger.findOne({ email }).sort({ createdAt: -1 });
+
+  res.json({
+    balance: last ? last.balance : 0
+  });
+});
+app.get("/api/ledger", async (req, res) => {
+  const email = req.query.email;
+
+  const data = await Ledger.find({ email }).sort({ createdAt: -1 });
+
+  res.json(data);
+});
+app.post("/api/add-money", async (req, res) => {
+  const { email, amount } = req.body;
+
+  const last = await Ledger.findOne({ email }).sort({ createdAt: -1 });
+  const prevBalance = last ? last.balance : 0;
+
+  const newBalance = prevBalance + amount;
+
+  await Ledger.create({
+    email,
+    amount,
+    type: "CREDIT",
+    category: "TOPUP",
+    balance: newBalance
+  });
+
+  res.json({ success: true, balance: newBalance });
+});

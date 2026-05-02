@@ -1,19 +1,58 @@
+
+
+
+
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <title>Signup</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body class="center">
 
-<div class="auth-box">
-  <h2>Create Account</h2>
-<input id="name" placeholder="Name">
-<input id="email" placeholder="Email">
-<input id="password" type="password">
-<button onclick="signup()">Signup</button>
-<p id="msg"></p>
-</div>
+  <div class="auth-box">
+    <h2>Create Account</h2>
 
-<script src="js/app.js"></script>
+    <input id="name" placeholder="Name" />
+    <input id="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+
+    <!-- ❌ REMOVED onclick -->
+    <!-- ✅ Using JS event listener -->
+    <button id="signupBtn">Signup</button>
+
+    <p id="msg"></p>
+  </div>
+
+  <!-- ✅ Load JS AFTER HTML -->
+  <script src="js/app.js"></script>
+
+  <!-- ✅ SAFE EVENT BINDING -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("DOM LOADED ✅");
+
+      const btn = document.getElementById("signupBtn");
+
+      if (btn) {
+        btn.addEventListener("click", () => {
+          console.log("Signup button clicked ✅");
+
+          // call your existing function
+          if (typeof signup === "function") {
+            signup();
+          } else {
+            console.error("❌ signup() not found in app.js");
+          }
+        });
+      } else {
+        console.error("❌ signupBtn not found");
+      }
+    });
+  </script>
+
 </body>
 </html>

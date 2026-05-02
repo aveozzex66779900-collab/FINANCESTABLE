@@ -1,0 +1,21 @@
+<h2>🤖 AI Support</h2>
+
+<textarea id="question" placeholder="Ask anything..."></textarea>
+<button onclick="askAI()">Ask AI</button>
+
+<div id="answer"></div>
+
+<script>
+async function askAI() {
+  const q = document.getElementById("question").value;
+
+  const res = await fetch("http://localhost:5000/api/ai/advice", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ email: "test@gmail.com" })
+  });
+
+  const data = await res.json();
+  document.getElementById("answer").innerText = data.advice;
+}
+</script>

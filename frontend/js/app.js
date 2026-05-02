@@ -8,15 +8,125 @@ window.onerror = function (msg, url, line, col, error) {
 window.onunhandledrejection = function (event) {
   console.error("❌ PROMISE ERROR:", event.reason);
 };
-/* ================= LOGIN ================= */
-   
 
 
 
 
-async function loginUser(email, password) {
+
+
+
+const API = {
+  async getAdvice(data) {
+    const res = await fetch("http://localhost:5000/api/ai/advice", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    // ✅ SAFE PARSE
+    const text = await res.text();
+
+    try {
+      return JSON.parse(text);
+    } catch (err) {
+      console.error("❌ Not JSON:", text);
+      throw new Error("Invalid JSON response");
+    }
+  }
+};
+
+
+
+
+
+
+// ================= UI HELPERS (ADD AT TOP) =================
+
+function showLoading() {
+  const loader = document.createElement("div");
+  loader.id = "aiLoader";
+
+  loader.style.position = "fixed";
+  loader.style.top = "50%";
+  loader.style.left = "50%";
+  loader.style.transform = "translate(-50%, -50%)";
+  loader.style.background = "#0f172a";
+  loader.style.color = "#22c55e";
+  loader.style.padding = "20px";
+  loader.style.borderRadius = "10px";
+  loader.style.fontSize = "16px";
+  loader.style.zIndex = "9999";
+
+  loader.innerHTML = "🤖 AI analyzing...";
+  document.body.appendChild(loader);
+}
+
+function hideLoading() {
+  const loader = document.getElementById("aiLoader");
+  if (loader) loader.remove();
+}
+
+function showSuccessModal(message) {
+  const modal = document.createElement("div");
+
+  modal.style.position = "fixed";
+  modal.style.top = "0";
+  modal.style.left = "0";
+  modal.style.width = "100%";
+  modal.style.height = "100%";
+  modal.style.background = "rgba(0,0,0,0.6)";
+  modal.style.display = "flex";
+  modal.style.alignItems = "center";
+  modal.style.justifyContent = "center";
+  modal.style.zIndex = "9999";
+
+  modal.innerHTML = `
+    <div style="
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      color: white;
+      width: 300px;
+      animation: scaleIn 0.3s ease;
+    ">
+      <div style="font-size: 40px;">✅</div>
+      <h2>Success</h2>
+      <p>${message}</p>
+      <button onclick="this.closest('div').parentElement.remove()"
+        style="margin-top:15px;padding:10px 20px;border:none;border-radius:8px;background:#22c55e;color:black;">
+        Done
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+}
+
+
+
+
+// 🔐 LOGIN FUNCTION
+
+
+
+
+
+
+  
+
+
+
+window.login = async function () {
   try {
-    const res = await fetch("http://localhost:5000/login", {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    console.log("🔐 Attempt login:", email);
+
+    const res = await fetch("http://localhost:5000/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -24,125 +134,382 @@ async function loginUser(email, password) {
       body: JSON.stringify({ email, password })
     });
 
-    const data = await res.json();
-    console.log("LOGIN RESPONSE:", data);
+    // ✅ handle invalid JSON safely
+    let data;
+    try {
+      data = await res.json();
+    } catch (err) {
+      console.error("❌ Invalid JSON response");
+      alert("Server error. Try again.");
+      return;
+    }
 
+    console.log("📦 Login response:", data);
+
+    // ✅ success flow
+    
+    
     if (data.success) {
-      localStorage.setItem("role", data.role);
-      localStorage.setItem("email", email);
+  const role = data.role || "user";
+  localStorage.setItem("email", email);
 
-      alert("Login Success ✅");
 
-      if (data.role === "admin") {
-        window.location.href = "admin.html";
-      } else {
-        window.location.href = "dashboard.html";
-      }
+    
+  localStorage.setItem("userId", data.userId);
 
-    } else {
-      alert("Access Denied ❌");
+  alert("Login success ✅");
+
+  if (role === "admin") {
+    window.location.href = "/frontend/admin.html";
+  } else {
+    window.location.href = "/frontend/dashboard.html";
+  }
+}
+    
+    else {
+      alert(data.message || "Wrong email or password ❌");
     }
 
   } catch (err) {
-    console.error("LOGIN ERROR:", err);
-    alert("Server Error ❌");
+    console.error("❌ Login error:", err);
+    alert("Network error. Backend not reachable.");
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+  
+// 🆕 SIGNUP FUNCTION
+
+
+
+
+
+
+
+
+
+
+
+  window.signup = async function () {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  console.log("🚀 Sending:", { name, email, password }); // ADD THIS
+
+  const res = await fetch("http://localhost:5000/api/auth/signup", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name,
+    email,
+    password
+  })
+});
+  const data = await res.json();
+
+  console.log("📩 RESPONSE:", data); // ADD THIS
+
+  if (data.success) {
+    document.getElementById("msg").innerText = "Signup success ✅";
+    window.location.href = "login.html";
+  } else {
+    document.getElementById("msg").innerText =
+      data.message || "Signup failed ❌";
   }
 }
-/* ================= SIGNUP ================= */
-async function signup(){
-  const msg = document.getElementById("msg");
 
-  try{
-    const res = await fetch("http://localhost:5000/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: document.getElementById("name")?.value,
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value
-      })
+
+
+
+
+
+async function loadUsers() {
+
+  try {
+
+    const response = await fetch("http://localhost:5000/api/users");
+
+    
+    
+
+
+    const data = await response.json();
+
+const users = data.users || [];
+    const table = document.getElementById("usersTable");
+
+    if (!table) return;
+
+    table.innerHTML = "";
+
+    users.reverse().forEach((user) => {
+
+      table.innerHTML += `
+        <tr>
+          <td>${user.email}</td>
+          <td>${user.role || "user"}</td>
+          <td>${user.upi || "-"}</td>
+
+          <td>
+            <button>View</button>
+          </td>
+        </tr>
+      `;
+
     });
 
-    const data = await res.json();
+  } catch (err) {
 
-    if(data.success){
-      alert("Signup Success ✅");
-      window.location = "login.html";
-    } else {
-      msg.innerText = data.message || "Signup failed";
-    }
+    console.error("Load users error:", err);
 
-  }catch(err){
-    console.error(err);
-    msg.innerText = "Server error ❌";
   }
+
 }
+
+
+
+
 /* ================= UPI PAYMENT ================= */
 
 
 
 
 
-async function payUPI() {
-  const upi = document.getElementById("upiId").value;
-  const amount = document.getElementById("amount").value;
 
-  if (!upi || !amount) {
-    alert("Enter UPI ID and Amount");
-    return;
-  }
 
-  alert("Payment Processing...");
 
+
+
+window.payUPI = async function () {
   try {
+    // ✅ Get logged-in user email
+    const email = localStorage.getItem("email");
+
+    if (!email) {
+      alert("❌ Please login first");
+      window.location.href = "login.html";
+      return;
+    }
+
+    // ✅ Get inputs
+    const upiInput = document.getElementById("upiId");
+    const amountInput = document.getElementById("amount");
+
+    if (!upiInput || !amountInput) {
+      alert("❌ Input fields missing");
+      return;
+    }
+
+    const upi = upiInput.value.trim();
+    const amount = Number(amountInput.value.trim());
+
+    console.log("💳 PAY UPI:", { email, upi, amount });
+
+    // ✅ Validation
+    if (!upi || !amount || amount <= 0) {
+      alert("❌ Enter valid UPI & amount");
+      return;
+    }
+
+    // ✅ API call
     const res = await fetch("http://localhost:5000/api/transaction", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      
-      
+      body: JSON.stringify({
+        email: email,        // 🔥 FIXED (was using UPI before)
+        amount: amount,
+        type: "UPI",
+        status: "success"
+      })
+    });
 
+    const result = await res.json();
 
-body: JSON.stringify({
-  email: localStorage.getItem("email"),
-  amount: amount,
-  method: "UPI",        // ✅ ADD
-  status: "success"     // ✅ ADD
-})
+    console.log("📩 RESPONSE:", result);
+
+    // ✅ Proper error handling
+    if (!res.ok || !result.success) {
+      throw new Error(result.message || "Payment failed");
+    }
+
+    // ✅ Success UI
+    playSuccessSound();   // 🔊 ADD THIS
+alert("Payment Success ✅");
+
+    // 🔥 Clear inputs
+    upiInput.value = "";
+    amountInput.value = "";
+
+    // 🔄 Refresh transactions
+    await loadTransactions();
+
+  } catch (err) {
+    console.error("❌ PAY ERROR:", err);
+    alert(err.message || "Payment failed");
+  }
+}
+async function payCard() {
+  try {
+    const cardAmountInput = document.getElementById("cardAmount");
+
+    // ✅ get logged-in user
+    const email = localStorage.getItem("email");
+
+    // 🚨 must login
+    if (!email) {
+      alert("Please login first ❌");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const amount = cardAmountInput?.value.trim();
+
+    // ✅ validation
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+      alert("Enter valid amount ❌");
+      return;
+    }
+
+    console.log("💳 CARD PAYMENT:", { email, amount });
+
+    const res = await fetch("http://localhost:5000/api/transaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: email,          // ✅ FIXED (no manual input)
+        amount: Number(amount),
+        type: "CARD",          // unified type
+        status: "success"
+      })
     });
 
     const data = await res.json();
 
+    console.log("✅ CARD RESPONSE:", data);
+
     if (data.success) {
-      alert("Payment Success ✅");
-      
+      alert("Card Payment Success 💳");
+
+      // ✅ clear input
+      cardAmountInput.value = "";
+
+      // ✅ reload transactions
+      loadTransactions();
+
+    } else {
+      alert(data.message || "Card payment failed ❌");
     }
 
   } catch (err) {
-    console.error("Error:", err);
+    console.error("❌ CARD ERROR:", err);
+    alert("Server error ❌");
   }
 }
 
-window.payUPI = payUPI;
 
-/* ================= CARD PAYMENT ================= */
-async function payCard(){
+
+
+
+
+
+
+
+async function payCrypto() {
   try {
-    const res = await fetch(API + "/pay-card", {
-      method: "POST"
+    const type = document.getElementById("cryptoType").value;
+    const amountInput = document.getElementById("cryptoAmount");
+
+    // ✅ get logged-in user
+    const email = localStorage.getItem("email");
+
+    // 🚨 must login
+    if (!email) {
+      alert("Please login first ❌");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const amount = amountInput?.value.trim();
+
+    // ✅ validation
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+      alert("Enter valid crypto amount ❌");
+      return;
+    }
+    
+
+
+
+    
+
+
+
+
+
+    console.log("🚀 CRYPTO PAYMENT:", { email, type, amount });
+
+    const res = await fetch("http://localhost:5000/api/transaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: email,            // ✅ FIXED (no crypto_user)
+        amount: Number(amount),
+        type: type,              // BTC / ETH / etc.
+        status: "success"
+      })
     });
 
     const data = await res.json();
 
-    alert("Card Payment Success 💳");
-    window.location.href = "success.html";
+    console.log("✅ CRYPTO RESPONSE:", data);
 
-  } catch(err){
-    console.error(err);
+    if (data.success) {
+      alert("Crypto Payment Success 🚀");
+
+
+
+
+
+
+
+
+      window.location.href =
+  `payment-success.html?type=Crypto Payment&amount=${amount}`;
+
+
+      // ✅ clear input
+      amountInput.value = "";
+
+      // ✅ reload transactions
+      loadTransactions();
+
+    } else {
+      alert(data.message || "Crypto payment failed ❌");
+    }
+
+  } catch (err) {
+    console.error("❌ CRYPTO ERROR:", err);
+    alert("Server error ❌");
   }
 }
-
 /* ================= GET PAYMENTS ================= */
 async function getPayments(){
   try {
@@ -212,30 +579,7 @@ async function loadAdmin(){
 
 
 
-async function loadUsers() {
-  const res = await fetch("http://localhost:5000/admin/users");
-  const users = await res.json();
 
-  console.log("USERS:", users);
-
-  const list = document.getElementById("userList");
-
-  if (!list) {
-    console.error("❌ userList not found in HTML");
-    return;
-  }
-
-  list.innerHTML = "";
-
-  users.forEach(u => {
-    list.innerHTML += `
-      <div style="border:1px solid #444; margin:5px; padding:8px;">
-        <p><b>${u.email}</b></p>
-        <p>Role: ${u.role || "user"}</p>
-      </div>
-    `;
-  });
-}
 /* ================= CRYPTO FEATURE ================= */
 async function generateCrypto(){
   try {
@@ -250,132 +594,304 @@ async function generateCrypto(){
 }
 
 /* ================= TRANSACTIONS ================= */
-async function loadTransactions() {
-  console.log("🚀 loadTransactions START");
+ 
 
+
+
+
+
+window.loadTransactions = async function () {
+
+  try {
+
+    const email = localStorage.getItem("email");
+
+    const res = await fetch(
+      `http://localhost:5000/api/transactions?email=${email}`
+    );
+
+    const data = await res.json();
+
+    console.log("TRANSACTIONS:", data);
+
+    // ✅ SAFE fallback
+    const transactions = data.transactions || data || [];
+
+    const txList =
+      document.getElementById("txList");
+
+    const revenue =
+      document.getElementById("revenue");
+
+    const payments =
+      document.getElementById("payments");
+
+    if (txList) {
+      txList.innerHTML = "";
+    }
+
+    let total = 0;
+
+    transactions.forEach((tx) => {
+
+      total += Number(tx.amount || 0);
+
+      if (txList) {
+
+        txList.innerHTML += `
+          <li>
+            💸 ${tx.email}
+            - ₹${tx.amount}
+            - ${tx.status || "success"}
+          </li>
+        `;
+      }
+
+    });
+
+    if (revenue) {
+      revenue.innerText = total;
+    }
+
+    if (payments) {
+      payments.innerText = transactions.length;
+    }
+
+  } catch (err) {
+
+    console.error(err);
+
+    alert("Failed to load transactions");
+
+  }
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function loadUsers() {
+
+  try {
+
+    const response = await fetch("http://localhost:5000/api/users");
+
+    const data = await response.json();
+
+    const users = data.users || [];
+
+    const table = document.getElementById("usersTable");
+
+    if (!table) return;
+
+    table.innerHTML = "";
+
+    users.reverse().forEach((user) => {
+
+      table.innerHTML += `
+        <tr>
+          <td>${user.email}</td>
+          <td>${user.role || "user"}</td>
+          <td>${user.upi || "-"}</td>
+          <td>
+            <button>View</button>
+          </td>
+        </tr>
+      `;
+
+    });
+
+  } catch (err) {
+
+    console.error("Load users error:", err);
+
+  }
+
+}
+
+
+
+
+
+
+window.addEventListener("DOMContentLoaded", () => {
+
+  loadTransactions();
+
+  loadUsers();// loadUsers();
+
+});
+
+/* ================= B2B PAYMENT ================= */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+window.sendB2B = async function () {
+
+  try {
+
+    const email =
+      document.getElementById("b2bEmail")?.value;
+
+    const amount =
+      document.getElementById("b2bAmount")?.value;
+
+    const currency =
+      document.getElementById("b2bCurrency")?.value || "INR";
+
+    const userId =
+      localStorage.getItem("userId");
+
+    if (!email || !amount) {
+      alert("Fill all fields");
+      return;
+    }
+
+    const response = await fetch(
+      "http://localhost:5000/api/b2b/pay",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userId,
+          email,
+          amount,
+          currency
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    console.log("B2B RESPONSE:", data);
+
+    if (data.success) {
+
+      alert("B2B Payment Success ✅");
+
+
+
+    
+
+
+
+
+
+      
+      window.location.href =
+  `payment-success.html?type=B2B Payment&amount=${amount}`;
+
+
+
+      loadTransactions();
+
+    } else {
+
+      alert(data.message || "Payment failed");
+
+    }
+
+  } catch (err) {
+
+    console.error(err);
+
+    alert("Failed to load");
+
+  }
+
+};
+
+/* ================= AI ADVICE ================= */
+
+
+
+
+
+
+async function getAdvice() {
   try {
     const email = localStorage.getItem("email");
 
-    console.log("📧 EMAIL FROM STORAGE:", email);
-
     if (!email) {
-      console.warn("⚠️ No email found in localStorage");
+      alert("Login required ❌");
       return;
     }
 
-    const url = `http://localhost:5000/api/transactions?email=${email}`;
-    console.log("🌐 FETCH URL:", url);
-
-    const res = await fetch(url);
-
-    console.log("📡 RESPONSE STATUS:", res.status);
-
-    if (!res.ok) {
-      console.error("❌ API FAILED:", res.status);
-      return;
-    }
+    const res = await fetch("http://localhost:5000/api/premium-ai/advice", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email })
+    });
 
     const data = await res.json();
 
-    console.log("📦 DATA RECEIVED:", data);
+    console.log("AI RESPONSE:", data);
 
-    if (!Array.isArray(data)) {
-      console.error("❌ DATA NOT ARRAY:", data);
-      return;
+    if (data.success) {
+      showAdviceUI(data.advice);
+    } else {
+      alert("AI failed ❌");
     }
-
-    const list = document.getElementById("userList");
-
-    console.log("📦 DOM ELEMENT:", list);
-
-    if (!list) {
-      console.error("❌ userList NOT FOUND in HTML");
-      return;
-    }
-
-    list.innerHTML = "";
-
-    if (data.length === 0) {
-      list.innerHTML = "<p>No transactions found</p>";
-      console.warn("⚠️ No transactions");
-      return;
-    }
-
-    data.forEach((tx, index) => {
-      console.log(`➡️ TX ${index}:`, tx);
-
-      const div = document.createElement("div");
-      div.style.border = "1px solid #444";
-      div.style.margin = "5px";
-      div.style.padding = "5px";
-
-      div.innerText =
-        `${tx.email} | ₹${tx.amount} | ${tx.status || "success"}`;
-
-      list.appendChild(div);
-    });
-
-    console.log("✅ UI UPDATED SUCCESSFULLY");
 
   } catch (err) {
-    console.error("🔥 LOAD TX CRASH:", err);
+    console.error("AI ERROR:", err);
+    alert("Server error ❌");
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-  
-/* ================= B2B PAYMENT ================= */
-async function sendB2B(){
-  try {
-    const res = await fetch(API + "/b2b", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({
-        company: "Client A",
-        amount: 5000
-      })
-    });
-
-    const data = await res.json();
-
-    alert("B2B Payment Sent ✅");
-
-  } catch(err){
-    console.error(err);
-  }
-}
-
-/* ================= AI ADVICE ================= */
-async function getAdvice(){
-  try {
-    const res = await fetch(API + "/ai-advice");
-    const data = await res.json();
-
-    alert(data.advice || "Invest wisely 📊");
-
-  } catch(err){
-    console.error(err);
-  }
-}
-
-
-
-
-
-
 async function runAISecurity(){
   const status = document.getElementById("aiStatus");
 
@@ -432,88 +948,9 @@ async function biometricLogin(){
     alert("❌ Biometric failed");
   }
 }
-async function runAISecurity(){
-  const status = document.getElementById("aiStatus");
-
-  try{
-    const res = await fetch("http://localhost:5000/ai-security");
-    const data = await res.json();
-
-    if(status){
-      status.innerText = data.risk === "low"
-        ? "✅ Safe Login"
-        : "⚠️ High Risk";
-    }
-
-    return data.risk;
-
-  }catch{
-    if(status) status.innerText = "❌ AI failed";
-    return "low";
-  }
-}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-async function payCrypto() {
-  const crypto = document.getElementById("cryptoType")?.value;
-  const amount = document.getElementById("cryptoAmount")?.value;
-  const email = localStorage.getItem("email");
-
-  console.log("CRYPTO:", crypto);
-  console.log("AMOUNT:", amount);
-
-  if (!crypto || crypto === "") {
-    alert("Select crypto ❌");
-    return;
-  }
-
-  if (!amount || amount <= 0) {
-    alert("Enter valid amount ❌");
-    return;
-  }
-
-  try {
-    const res = await fetch("http://localhost:5000/api/transaction", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email,
-        amount,
-        type: crypto,
-        status: "success"
-      })
-    });
-
-    const data = await res.json();
-
-    console.log("CRYPTO PAYMENT RESPONSE:", data);
-
-    alert("Crypto Payment Success ✅");
-
-    loadTransactions(); // 🔥 refresh UI
-
-  } catch (err) {
-    console.error(err);
-    alert("Payment Failed ❌");
-  }
-}
 async function adminLogin() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
@@ -535,29 +972,12 @@ async function adminLogin() {
     document.getElementById("msg").innerText = "Access Denied ❌";
   }
 }
-async function loadUsers() {
-  const res = await fetch("http://localhost:5000/admin/users");
-  const users = await res.json();
 
-  
-  const list = document.getElementById("userList");
 
-if (!list) return; // ✅ prevent crash
 
-list.innerHTML = "";
-  users.forEach(u => {
-    list.innerHTML += `
-      <div>
-        ${u.email} (${u.role}) 
-        ${u.isBlocked ? "🚫 BLOCKED" : ""}
-        
-        <button onclick="blockUser('${u._id}')">Block</button>
-        <button onclick="unblockUser('${u._id}')">Unblock</button>
-        <button onclick="deleteUser('${u._id}')">Delete</button>
-      </div>
-    `;
-  });
-}
+
+
+
 
 
 async function addUser() {
@@ -566,58 +986,53 @@ async function addUser() {
 
   const res = await fetch("http://localhost:5000/admin/add-user", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ email, password })
   });
 
   const data = await res.json();
 
-  console.log("ADD USER RESPONSE:", data);
-
   if (data.success) {
-    alert("✅ User Added");
-    loadUsers();
+    alert("User Added ✅");
+    loadUsers(); // 🔥 THIS LINE
   } else {
-    alert("❌ " + (data.message || "Failed"));
+    alert(data.message || "Error ❌");
   }
 }
-async function blockUser(id) {
-  await fetch("http://localhost:5000/admin/block-user", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id })
-  });
 
-  loadUsers();
-}
 
-async function unblockUser(id) {
-  await fetch("http://localhost:5000/admin/unblock-user", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id })
-  });
 
-  loadUsers();
-}
+
 
 async function deleteUser(id) {
-  await fetch("http://localhost:5000/admin/delete-user", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id })
-  });
+  if (!confirm("Delete this user?")) return;
 
-  loadUsers();
+  try {
+    const res = await fetch("http://localhost:5000/admin/delete-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("User Deleted ✅");
+      loadUsers(); // 🔥 refresh table
+    } else {
+      alert("Delete Failed ❌");
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Server Error ❌");
+  }
 }
-
-
-
 // AUTO LOAD ADMIN USERS
 if (window.location.pathname.includes("admin.html")) {
-  loadUsers();
+  loadUsers();// loadUsers();
 }
 
 window.addEventListener("load", () => {
@@ -628,9 +1043,7 @@ window.addEventListener("load", () => {
     loadTransactions();
   }
 });
-window.addEventListener("load", () => {
-  loadTransactions();
-});
+
 
 
 
@@ -662,5 +1075,175 @@ function downloadCSV() {
 }
 
 if (window.location.pathname.includes("admin.html")) {
-  loadUsers();
+  loadUsers();// loadUsers();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function openQR() {
+  window.location.href = "qr-pay.html";
+}
+
+function showAdviceUI(advice) {
+  let box = document.getElementById("aiAdviceBox");
+
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "aiAdviceBox";
+
+    box.style.position = "fixed";
+    box.style.bottom = "20px";
+    box.style.right = "20px";
+    box.style.width = "320px";
+    box.style.background = "#0f172a";
+    box.style.color = "#fff";
+    box.style.padding = "20px";
+    box.style.borderRadius = "12px";
+    box.style.boxShadow = "0 10px 30px rgba(0,0,0,0.4)";
+    box.style.zIndex = "9999";
+    box.style.fontSize = "14px";
+    box.style.lineHeight = "1.6";
+
+    document.body.appendChild(box);
+  }
+
+  box.innerHTML = `
+    <h3 style="color:#22c55e; margin-bottom:10px;">🤖 AI Advisor</h3>
+    <pre style="white-space:pre-wrap;">${advice}</pre>
+    <button onclick="this.parentElement.remove()" 
+      style="margin-top:10px; padding:6px 12px; border:none; border-radius:6px; background:#22c55e; color:#000;">
+      Close
+    </button>
+  `;
+}
+
+
+
+async function saveBank() {
+  const email = localStorage.getItem("email");
+
+  const res = await fetch("http://localhost:5000/api/add-bank", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      email,
+      upiId: document.getElementById("upi").value,
+      accountNumber: document.getElementById("acc").value,
+      ifsc: document.getElementById("ifsc").value,
+      bankName: document.getElementById("bankName").value
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("Bank Added ✅");
+  }
+}
+
+
+
+
+
+async function loadBalance() {
+  const email = localStorage.getItem("email");
+
+  const res = await fetch(`http://localhost:5000/api/user?email=${email}`);
+  const data = await res.json();
+
+  document.getElementById("balance").innerText =
+    "₹" + (data.wallet?.balance || 0);
+}
+
+function openSmartHub() {
+  window.location.href = "smart-hub.html";
+}
+
+
+
+
+async function loadAdminAnalytics() {
+  try {
+    const res = await fetch("http://localhost:5000/admin/analytics");
+    const result = await res.json();
+
+    if (!result.success) throw new Error("Failed");
+
+    const data = result.data;
+
+    document.getElementById("totalUsers").innerText = data.totalUsers;
+    document.getElementById("totalTx").innerText = data.totalTransactions;
+    document.getElementById("revenue").innerText = "₹" + data.totalRevenue;
+    document.getElementById("successRate").innerText = data.successRate + "%";
+
+  } catch (err) {
+    console.error("Analytics error", err);
+  }
+}
+
+
+
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const signupBtn = document.getElementById("signupBtn");
+
+  if (signupBtn) {
+    signupBtn.addEventListener("click", () => {
+      console.log("Signup button clicked ✅");
+      signup();
+    });
+  }
+});
+
+
+
+
+function playSuccessSound() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.2);
+
+  gain.gain.setValueAtTime(0.2, ctx.currentTime);
+
+  oscillator.connect(gain);
+  gain.connect(ctx.destination);
+
+  oscillator.start();
+  oscillator.stop(ctx.currentTime + 0.3);
+}
+
+
+
+
+
+
+
+
+

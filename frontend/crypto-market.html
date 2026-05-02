@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Crypto Market</title>
+
+  <link rel="stylesheet" href="css/style.css"/>
+
+  <style>
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#0f172a;
+      color:white;
+    }
+
+    .market-header{
+      padding:40px;
+      text-align:center;
+      background:
+      linear-gradient(135deg,#111827,#1e293b);
+    }
+
+    .market-header h1{
+      font-size:48px;
+      margin-bottom:10px;
+    }
+
+    .market-grid{
+      display:grid;
+      grid-template-columns:
+      repeat(auto-fit,minmax(260px,1fr));
+
+      gap:25px;
+
+      padding:40px;
+    }
+
+    .coin-card{
+
+      background:
+      rgba(30,41,59,0.85);
+
+      border-radius:24px;
+
+      padding:30px;
+
+      backdrop-filter:blur(12px);
+
+      box-shadow:
+      0 15px 40px rgba(0,0,0,0.4);
+
+      transition:0.4s;
+    }
+
+    .coin-card:hover{
+      transform:
+      translateY(-10px) scale(1.02);
+    }
+
+    .coin-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    }
+
+    .coin-name{
+      font-size:24px;
+      font-weight:bold;
+    }
+
+    .coin-price{
+      font-size:32px;
+      margin:20px 0;
+      color:#22c55e;
+    }
+
+    .coin-change{
+      color:#4ade80;
+      font-size:18px;
+    }
+
+    .coin-info{
+      color:#cbd5e1;
+      line-height:1.8;
+    }
+
+    .buy-btn{
+      margin-top:25px;
+      width:100%;
+      padding:15px;
+      border:none;
+      border-radius:14px;
+      background:
+      linear-gradient(135deg,#2563eb,#3b82f6);
+
+      color:white;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .buy-btn:hover{
+      transform:scale(1.03);
+    }
+
+  </style>
+
+</head>
+<body>
+
+  <div class="market-header">
+
+    <h1>🚀 Crypto Market</h1>
+
+    <p>
+      Real-time inspired premium crypto dashboard
+    </p>
+
+  </div>
+
+  <div class="market-grid">
+
+    <div class="coin-card">
+
+      <div class="coin-top">
+        <div class="coin-name">₿ Bitcoin</div>
+        <div>BTC</div>
+      </div>
+
+      <div class="coin-price">
+        $67,540
+      </div>
+
+      <div class="coin-change">
+        +4.2%
+      </div>
+
+      <div class="coin-info">
+        Market Cap: $1.3T
+        <br/>
+        Volume: $42B
+      </div>
+
+      <button class="buy-btn">
+        Buy BTC
+      </button>
+
+    </div>
+
+    <div class="coin-card">
+
+      <div class="coin-top">
+        <div class="coin-name">Ξ Ethereum</div>
+        <div>ETH</div>
+      </div>
+
+      <div class="coin-price">
+        $3,480
+      </div>
+
+      <div class="coin-change">
+        +3.1%
+      </div>
+
+      <div class="coin-info">
+        Market Cap: $420B
+        <br/>
+        Volume: $18B
+      </div>
+
+      <button class="buy-btn">
+        Buy ETH
+      </button>
+
+    </div>
+
+    <div class="coin-card">
+
+      <div class="coin-top">
+        <div class="coin-name">◎ Solana</div>
+        <div>SOL</div>
+      </div>
+
+      <div class="coin-price">
+        $168
+      </div>
+
+      <div class="coin-change">
+        +8.4%
+      </div>
+
+      <div class="coin-info">
+        Market Cap: $70B
+        <br/>
+        Volume: $6B
+      </div>
+
+      <button class="buy-btn">
+        Buy SOL
+      </button>
+
+    </div>
+
+    <div class="coin-card">
+
+      <div class="coin-top">
+        <div class="coin-name">🟡 Binance</div>
+        <div>BNB</div>
+      </div>
+
+      <div class="coin-price">
+        $590
+      </div>
+
+      <div class="coin-change">
+        +2.5%
+      </div>
+
+      <div class="coin-info">
+        Market Cap: $88B
+        <br/>
+        Volume: $2B
+      </div>
+
+      <button class="buy-btn">
+        Buy BNB
+      </button>
+
+    </div>
+
+
+  </div>
+
+
+
+<div class="chart-section">
+
+  <h2>📈 Live Market Charts</h2>
+
+  <div class="tradingview-widget-container">
+
+    <iframe
+      src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=BINANCE:BTCUSDT&interval=1D&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&theme=dark"
+      width="100%"
+      height="500"
+      frameborder="0"
+      allowfullscreen>
+
+    </iframe>
+
+  </div>
+
+</div>
+
+
+<div class="ai-section">
+
+  <h2>🤖 AI Market Predictions</h2>
+
+  <div class="ai-grid">
+
+    <div class="ai-card buy">
+
+      <h3>BTC Signal</h3>
+
+      <p class="signal">
+        BUY
+      </p>
+
+      <p>
+        Confidence: 92%
+      </p>
+
+      <p>
+        AI predicts bullish momentum
+      </p>
+
+    </div>
+
+    <div class="ai-card hold">
+
+      <h3>ETH Signal</h3>
+
+      <p class="signal">
+        HOLD
+      </p>
+
+      <p>
+        Confidence: 74%
+      </p>
+
+      <p>
+        Sideways consolidation detected
+      </p>
+
+    </div>
+
+    <div class="ai-card sell">
+
+      <h3>SOL Signal</h3>
+
+      <p class="signal">
+        SELL
+      </p>
+
+      <p>
+        Confidence: 81%
+      </p>
+
+      <p>
+        Overbought conditions detected
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

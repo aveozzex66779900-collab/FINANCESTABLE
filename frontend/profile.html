@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Profile</title>
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    body { background:#0f172a; color:white; font-family:sans-serif; }
+    .container { padding:20px; max-width:500px; margin:auto; }
+    input { width:100%; padding:10px; margin:8px 0; border-radius:8px; border:none; }
+    button { padding:10px; width:100%; background:#22c55e; border:none; border-radius:8px; }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>👤 User Profile</h2>
+
+  <input id="email" disabled>
+
+  <h3>🏦 Bank Details</h3>
+  <input id="upi" placeholder="UPI ID">
+  <input id="account" placeholder="Account Number">
+  <input id="ifsc" placeholder="IFSC Code">
+  <input id="bank" placeholder="Bank Name">
+
+  <h3>💰 Wallet</h3>
+  <p id="wallet">Balance: ₹0</p>
+
+  <button onclick="saveProfile()">Save Profile</button>
+</div>
+
+<script>
+const email = localStorage.getItem("email");
+
+// LOAD PROFILE
+async function loadProfile() {
+  const res = await fetch(`http://localhost:5000/api/user/profile?email=${email}`);
+  const user = await res.json();
+
+  document.getElementById("email").value = user.email;
+  document.getElementById("upi").value = user.bank?.upiId || "";
+  document.getElementById("account").value = user.bank?.accountNumber || "";
+  document.getElementById("ifsc").value = user.bank?.ifsc || "";
+  document.getElementById("bank").value = user.bank?.bankName || "";
+
+  document.getElementById("wallet").innerText =
+    "Balance: ₹" + (user.wallet?.balance || 0);
+}
+
+// SAVE PROFILE
+async function saveProfile() {
+  await fetch("http://localhost:5000/api/user/update-profile", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      email,
+      upiId: document.getElementById("upi").value,
+      accountNumber: document.getElementById("account").value,
+      ifsc: document.getElementById("ifsc").value,
+      bankName: document.getElementById("bank").value
+    })
+  });
+
+  alert("Profile Saved ✅");
+}
+
+loadProfile();
+</script>
+
+</body>
+</html>

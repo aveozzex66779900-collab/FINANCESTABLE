@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Settings</title>
+
+  <style>
+    body { background:#0f172a; color:white; font-family:sans-serif; }
+    .container { padding:20px; }
+    .item { margin:15px 0; }
+    button { padding:10px; border:none; border-radius:8px; }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>⚙️ App Settings</h2>
+
+  <!-- 🌙 DARK MODE -->
+  <div class="item">
+    <label>
+      <input type="checkbox" onchange="toggleDarkMode(this)">
+      Dark Mode
+    </label>
+  </div>
+
+  <!-- 🔔 NOTIFICATIONS -->
+  <div class="item">
+    <label>
+      <input type="checkbox" checked>
+      Notifications
+    </label>
+  </div>
+
+  <!-- 🔐 LOGOUT -->
+  <div class="item">
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<script>
+function toggleDarkMode(el) {
+  if (el.checked) {
+    document.body.style.background = "#000";
+  } else {
+    document.body.style.background = "#0f172a";
+  }
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>

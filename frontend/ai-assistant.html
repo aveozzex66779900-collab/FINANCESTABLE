@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>AI Financial Assistant</title>
+
+  <link rel="stylesheet" href="css/style.css"/>
+
+  <style>
+
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:
+      linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),
+      url('https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=1600&auto=format&fit=crop');
+
+      background-size:cover;
+      background-position:center;
+      color:white;
+      min-height:100vh;
+    }
+
+    .overlay{
+      backdrop-filter:blur(12px);
+      min-height:100vh;
+      padding:40px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:40px;
+    }
+
+    .logo{
+      font-size:34px;
+      font-weight:bold;
+    }
+
+    .back-btn{
+      background:#2563eb;
+      color:white;
+      padding:14px 24px;
+      border-radius:12px;
+      text-decoration:none;
+      font-weight:bold;
+    }
+
+    .hero{
+      text-align:center;
+      margin-bottom:50px;
+    }
+
+    .hero h1{
+      font-size:54px;
+      margin-bottom:15px;
+    }
+
+    .hero p{
+      color:#cbd5e1;
+      font-size:18px;
+      max-width:800px;
+      margin:auto;
+      line-height:1.8;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:
+      repeat(auto-fit,minmax(300px,1fr));
+
+      gap:30px;
+    }
+
+    .card{
+      background:rgba(15,23,42,0.8);
+      border-radius:24px;
+      padding:30px;
+      box-shadow:0 10px 40px rgba(0,0,0,0.4);
+
+      transition:0.3s;
+    }
+
+    .card:hover{
+      transform:translateY(-10px);
+    }
+
+    .card h2{
+      margin-bottom:20px;
+      font-size:28px;
+    }
+
+    .card p{
+      color:#cbd5e1;
+      line-height:1.8;
+    }
+
+    .big-score{
+      font-size:70px;
+      font-weight:bold;
+      margin-top:20px;
+      color:#22c55e;
+    }
+
+    .recommendation{
+      background:#1e293b;
+      padding:15px;
+      border-radius:14px;
+      margin-top:15px;
+    }
+
+    .button-row{
+      display:flex;
+      gap:20px;
+      flex-wrap:wrap;
+      margin-top:40px;
+      justify-content:center;
+    }
+
+    .action-btn{
+      background:linear-gradient(135deg,#2563eb,#3b82f6);
+      color:white;
+      border:none;
+      padding:16px 30px;
+      border-radius:14px;
+      cursor:pointer;
+      font-size:16px;
+      font-weight:bold;
+      transition:0.3s;
+      box-shadow:0 10px 30px rgba(37,99,235,0.3);
+    }
+
+    .action-btn:hover{
+      transform:translateY(-5px);
+    }
+
+    .footer{
+      text-align:center;
+      margin-top:80px;
+      color:#94a3b8;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="overlay">
+
+    <div class="topbar">
+
+      <div class="logo">
+        🧠 FINANCESTABLE AI
+      </div>
+
+      <a href="dashboard.html" class="back-btn">
+        Back Dashboard
+      </a>
+
+    </div>
+
+    <div class="hero">
+
+      <h1>AI Financial Assistant</h1>
+
+      <p>
+        Advanced AI-powered financial intelligence platform
+        for spending analysis, fraud protection, portfolio
+        optimization, crypto insights, and smart fintech recommendations.
+      </p>
+
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+
+        <h2>💰 Spending Analysis</h2>
+
+        <p>
+          AI analyzes your transaction history and spending patterns.
+        </p>
+
+        <div class="big-score">
+          ₹48K
+        </div>
+
+        <p>Monthly spending detected</p>
+
+      </div>
+
+      <div class="card">
+
+        <h2>⚠ Fraud Detection</h2>
+
+        <p>
+          AI continuously monitors suspicious transactions and abnormal activity.
+        </p>
+
+        <div class="big-score" style="color:#f59e0b">
+          LOW
+        </div>
+
+        <p>Current risk level</p>
+
+      </div>
+
+      <div class="card">
+
+        <h2>📈 Portfolio Suggestions</h2>
+
+        <div class="recommendation">
+          BTC → 50%
+        </div>
+
+        <div class="recommendation">
+          ETH → 30%
+        </div>
+
+        <div class="recommendation">
+          Stablecoins → 20%
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <h2>💡 Smart Recommendations</h2>
+
+        <div class="recommendation">
+          Reduce unnecessary large transactions.
+        </div>
+
+        <div class="recommendation">
+          Enable AI fraud alerts for extra protection.
+        </div>
+
+        <div class="recommendation">
+          Diversify crypto investments safely.
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="button-row">
+
+      <button class="action-btn">
+        🔍 Run AI Scan
+      </button>
+
+      <button class="action-btn">
+        📊 Generate AI Report
+      </button>
+
+      <button class="action-btn">
+        🛡 Security Insights
+      </button>
+
+      <button class="action-btn">
+        💹 Portfolio Analysis
+      </button>
+
+    </div>
+
+    <div class="footer">
+
+      FINANCESTABLE AI • Advanced Fintech Intelligence Platform
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+
+  
+
+
+</body>
+</html>

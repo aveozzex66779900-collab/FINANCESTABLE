@@ -1,32 +1,104 @@
-
-
-
 <!DOCTYPE html>
 <html>
 <head>
+  <title>Admin Login</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body class="center">
+
+<body class="center admin-bg">
+
+
+
+
+
+
+
+
+
+
+  
+<div class="particles">
+  <span></span><span></span><span></span>
+  <span></span><span></span><span></span>
+</div>
+
 
 <div class="auth-box">
-  <h2>Admin Login</h2>
+  <h2>🔐 Admin Login</h2>
 
-  <input id="email" placeholder="Admin Email">
-  <input id="password" type="password" placeholder="Password">
+  <input id="email" placeholder="Email" />
+  <input id="password" type="password" placeholder="Password" />
 
-  <!-- ✅ HERE -->
-  <button onclick="loginUser(
-    document.getElementById('email').value,
-    document.getElementById('password').value
-  )">
-    Login
-  </button>
+  <button onclick="login()">Login</button>
 
   <p id="msg"></p>
 </div>
 
-<script src="js/app.js"></script>
+<script>
+window.login = async function () {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  const msg = document.getElementById("msg");
+  msg.innerText = "";
+
+  if (!email || !password) {
+    msg.innerText = "Enter email & password ❌";
+    return;
+  }
+
+  try {
+    console.log("🔐 Attempt login:", email);
+
+    const res = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    let data;
+
+    try {
+      data = await res.json();
+    } catch (e) {
+      console.error("❌ Invalid JSON response");
+      alert("Server error. Try again.");
+      return;
+    }
+
+    console.log("📥 Login response:", data);
+
+    if (!data.success) {
+      msg.innerText = data.message || "Login failed ❌";
+      return;
+    }
+
+    // ✅ SAFE STORAGE (NO BREAKING)
+    const role = data.role || "user";
+
+    localStorage.setItem("role", role);
+    localStorage.setItem("email", email);
+
+    console.log("✅ Logged in as:", role);
+
+    alert("Login success ✅");
+
+    // 🔥 ROLE BASED REDIRECT
+    if (role === "admin") {
+      window.location.href = "/frontend/admin.html";
+    } else {
+      window.location.href = "/frontend/dashboard.html";
+    }
+
+  } catch (err) {
+    console.error("❌ Login error:", err);
+    alert("Network error. Backend not reachable.");
+  }
+};
+</script>
 
 </body>
 </html>

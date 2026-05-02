@@ -1,0 +1,18 @@
+<h2>💰 Affiliate System</h2>
+
+<p>Your referral code:</p>
+<h3 id="refCode"></h3>
+
+<button onclick="copyCode()">Copy Code</button>
+
+<script>
+const email = "user@gmail.com";
+const code = btoa(email);
+
+document.getElementById("refCode").innerText = code;
+
+function copyCode() {
+  navigator.clipboard.writeText(code);
+  alert("Copied!");
+}
+</script>

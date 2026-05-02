@@ -1,28 +1,15 @@
 import mongoose from "mongoose";
 
+
 const transactionSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true
-  },
-  amount: {
-    type: Number,
-    required: true
-  },
-  method: {
-    type: String, // UPI / CRYPTO
-    required: true
-  },
-  status: {
-    type: String,
-    default: "success"
-  },
-  date: {
-    type: Date,
-    default: Date.now
-  }
-});
+  userId: String,
+  email: String,        // ✅ use ONLY this
+  amount: Number,
+  status: String,
+  method: String,
+  type: String,
+  paymentId: String
+}, { timestamps: true });
 
-const Transaction = mongoose.model("Transaction", transactionSchema);
 
-export default Transaction;
+export default mongoose.models.Transaction || mongoose.model("Transaction", transactionSchema);

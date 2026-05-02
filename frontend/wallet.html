@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Wallet</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="fade-in">
+
+<div class="glass" style="padding:30px; max-width:400px; margin:50px auto; text-align:center;">
+  
+  <h2>💰 Your Wallet</h2>
+
+  <h1 id="balance">₹0</h1>
+
+  <input id="amount" type="number" placeholder="Enter amount" />
+
+  <br><br>
+
+  <button class="btn primary" onclick="addMoney()">Add Money</button>
+  <button class="btn" onclick="sendMoney()">Send Money</button>
+
+</div>
+
+<script>
+let balance = 0;
+
+function addMoney(){
+  let amt = Number(document.getElementById("amount").value);
+  balance += amt;
+  document.getElementById("balance").innerText = "₹" + balance;
+}
+
+function sendMoney(){
+  let amt = Number(document.getElementById("amount").value);
+  if(amt > balance){
+    alert("❌ Not enough balance");
+    return;
+  }
+  balance -= amt;
+  document.getElementById("balance").innerText = "₹" + balance;
+  alert("✅ Payment Sent");
+}
+</script>
+
+</body>
+</html>

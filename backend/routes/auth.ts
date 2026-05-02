@@ -23,7 +23,10 @@ router.post("/login", async (req, res) => {
 
     return res.json({
       success: true,
-      role: user.role,
+     role: {
+  type: String,
+  default: "user"
+}
     });
 
   } catch (err) {

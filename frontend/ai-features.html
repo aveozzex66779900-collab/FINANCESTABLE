@@ -59,6 +59,69 @@
       margin-top: 20px;
     }
   </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+body {
+  background: linear-gradient(135deg, #e8f5e9, #f1f8f4);
+  color: #1b1b1b;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* AI Cards only */
+.ai-card {
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  transition: 0.25s ease;
+}
+
+.ai-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Buttons inside this page */
+.ai-btn {
+  background: linear-gradient(135deg, #00c853, #00e676);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+}
+
+
+
+
+
+body {
+  background: linear-gradient(135deg, #e8f5e9, #f1f8f4) !important;
+}
+.container {
+  padding: 20px;
+  gap: 20px;
+}
+</style>
+
+
+
+
+
+
 </head>
 
 <body>
@@ -75,7 +138,7 @@
 <div class="container">
 
   <!-- 📊 Portfolio Optimization -->
-  <div class="card">
+    <div class="card ai-card">
     <h3>📊 AI Portfolio Optimization</h3>
     <p>Optimize investments using AI</p>
 
@@ -85,19 +148,28 @@
   </div>
 
   <!-- 🚨 Fraud Detection -->
-  <div class="card">
-    <h3>🚨 AI Fraud Detection</h3>
-    <p>Check transaction risk score</p>
+  
 
-    <input id="amount" placeholder="Enter amount" type="number">
 
-    <button onclick="checkFraud()">Check Fraud</button>
-    
-    <h4 id="fraudResult"></h4>
-  </div>
+
+
+<div class="fraud-card">
+
+  <h2>🛡 AI Fraud Detection</h2>
+
+  <input
+    type="number"
+    id="fraudAmount"
+    placeholder="Enter transaction amount"
+  />
+
+  <button onclick="runFraudCheck()">
+    Check Fraud
+  </button>
+
+  <div id="fraudResult"></div>
 
 </div>
-
 <script>
 /* 📊 Portfolio Chart */
 const ctx = document.getElementById('portfolioChart');
@@ -121,27 +193,59 @@ function runPortfolio() {
   chart.data.datasets[0].data = data;
   chart.update();
 
-  alert("Portfolio Optimized ✅");
+  showLoading();
+
+setTimeout(() => {
+  hideLoading();
+  showSuccessModal("Portfolio optimized using AI 🚀");
+}, 1500);
 }
 
 /* 🚨 Fraud Detection */
 async function checkFraud() {
-  const amount = document.getElementById("amount").value;
+  try {
+    const amount = document.getElementById("amount").value;
 
-  const res = await ("http://localhost:8000/predict", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ amount: Number(amount), transactions: 1 })
-  });
+    if (!amount || amount <= 0) {
+      alert("Enter valid amount ❌");
+      return;
+    }
 
-  const data = await res.json();
+    showLoading(); // optional premium UX
 
-  document.getElementById("fraudResult").innerText =
-    data.fraud ? "🚨 Fraud Detected (Risk: " + data.riskScore + ")" :
-                 "✅ Safe (Risk: " + data.riskScore + ")";
+
+
+
+
+    const res = await fetch ("http://localhost:5000/api/premium-ai/fraud-check", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    amount: Number(amount),
+    transactions: 1
+  })
+});
+
+
+
+    // ✅ FIX HERE
+    const data = await res.json();
+
+    hideLoading();
+
+    document.getElementById("fraudResult").innerText =
+      data.fraud
+        ? `🚨 Fraud Detected (Risk: ${data.riskScore})`
+        : `✅ Safe Transaction (Risk: ${data.riskScore})`;
+
+  } catch (err) {
+    console.error("Fraud API Error:", err);
+    hideLoading();
+    alert("Fraud detection failed ❌");
+  }
 }
-
-
 
 
 
@@ -149,6 +253,8 @@ async function checkFraud() {
 
 
 </script>
+<script src="js/app.js"></script>
 
+<script src="./js/ai-safe.js"></script>
 </body>
 </html>

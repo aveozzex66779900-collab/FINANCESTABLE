@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,7 +11,7 @@
 <!-- 🔐 ADMIN PROTECTION -->
 <script>
   const role = localStorage.getItem("role");
-  if(role !== "admin"){
+  if (role !== "admin") {
     alert("Access Denied ❌");
     window.location.href = "admin-login.html";
   }
@@ -21,17 +20,16 @@
 <div class="dashboard">
 
   <h1>💼 Admin Dashboard</h1>
-   <h2>Users</h2>
 
-<input id="newEmail" placeholder="Email">
-<input id="newPassword" placeholder="Password">
-<button onclick="addUser()">Add User</button>
+  <!-- ➕ ADD USER -->
+  <h2>Add User</h2>
+  <div class="form">
+    <input id="newEmail" placeholder="Email">
+    <input id="newPassword" placeholder="Password">
+    <button onclick="addUser()">Add User</button>
+  </div>
 
-
-<div id="userList" style="color:white;"></div>
-
-
-  <!-- 🔥 CARDS -->
+  <!-- 📊 CARDS -->
   <div class="cards">
     <div class="card">
       <h3>Total Users</h3>
@@ -49,23 +47,266 @@
     </div>
   </div>
 
-  <!-- 📊 CHART -->
+  <!-- 📈 CHART -->
   <canvas id="userChart"></canvas>
 
   <!-- 👥 USERS TABLE -->
   <h2>Users</h2>
+
   <table id="userTable">
     <thead>
       <tr>
         <th>Email</th>
         <th>Role</th>
+        <th>UPI</th>
+        <th>Action</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    
+
+    <tbody id="isolatedUsersTable">
+
+</tbody>
   </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <section class="admin-live-feed">
+  <h2>🔴 Live Activity</h2>
+
+  <div id="liveFeed">
+
+    <div class="feed-item">
+      ✅ New payment received
+    </div>
+
+    <div class="feed-item">
+      👤 User signed up
+    </div>
+
+    <div class="feed-item">
+      💰 Crypto transaction completed
+    </div>
+
+  </div>
+</section>
+
+<section class="fraud-panel">
+  <h2>🛡 AI Fraud Detection</h2>
+
+  <div class="fraud-grid">
+
+    <div class="fraud-card safe">
+      Low Risk Transactions
+      <h1>98%</h1>
+    </div>
+
+    <div class="fraud-card warning">
+      Suspicious Activities
+      <h1>2</h1>
+    </div>
+
+    <div class="fraud-card blocked">
+      Blocked Payments
+      <h1>0</h1>
+    </div>
+
+  </div>
+</section>
+
+<section class="system-health">
+
+  <h2>⚡ System Health</h2>
+
+  <div class="health-item">
+    MongoDB: 🟢 Online
+  </div>
+
+  <div class="health-item">
+    API Server: 🟢 Running
+  </div>
+
+  <div class="health-item">
+    Payment Gateway: 🟢 Active
+  </div>
+
+  <div class="health-item">
+    AI Engine: 🟢 Operational
+  </div>
+
+</section>
+
+<section class="quick-actions">
+
+  <h2>🚀 Quick Actions</h2>
+
+  <div class="quick-grid">
+
+    <button>➕ Add User</button>
+
+    <button>💳 View Payments</button>
+
+    <button>📤 Export CSV</button>
+
+    <button>🧠 AI Reports</button>
+
+    <button>🔒 Security Logs</button>
+
+    <button>📈 Analytics</button>
+
+  </div>
+
+</section>
+
+<section class="premium-analytics">
+
+  <div class="analytic-card">
+    <h3>Daily Revenue</h3>
+    <h1>₹0</h1>
+  </div>
+
+  <div class="analytic-card">
+    <h3>Crypto Volume</h3>
+    <h1>$0</h1>
+  </div>
+
+  <div class="analytic-card">
+    <h3>Success Rate</h3>
+    <h1>100%</h1>
+  </div>
+
+  <div class="analytic-card">
+    <h3>Active Users</h3>
+    <h1>0</h1>
+  </div>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </div>
 
-<script src="js/app.js"></script>
+
+<script>
+window.onload = loadUsers;
+</script>
+
+<script>
+
+async function loadUsers() {
+  try {
+    const res = await fetch("http://localhost:5000/admin/users");
+    const users = await res.json();
+
+    const table = document.getElementById("usersTable");
+    table.innerHTML = "";
+
+    document.getElementById("totalUsers").innerText = users.length;
+
+    users.forEach(user => {
+      const row = `
+        <tr>
+          <td>${user.email}</td>
+          <td>${user.role}</td>
+
+          <td>
+            ${user.bank?.upiId 
+              ? `<span style="color:lime">${user.bank.upiId}</span>` 
+              : `<span style="color:red">Not added</span>`
+            }
+          </td>
+
+          <td>
+            <button onclick="deleteUser('${user._id}')" style="background:red;">
+              Delete
+            </button>
+          </td>
+        </tr>
+      `;
+      table.innerHTML += row;
+    });
+
+  } catch (err) {
+    console.error("Error loading users:", err);
+  }
+}
+
+async function addUser() {
+  const email = document.getElementById("newEmail").value;
+  const password = document.getElementById("newPassword").value;
+
+  const res = await fetch("http://localhost:5000/admin/add-user", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("User Added ✅");
+    loadUsers(); // loadUsers();
+  } else {
+    alert(data.message || "Failed ❌");
+  }
+}
+
+async function deleteUser(id) {
+  if (!confirm("Delete this user?")) return;
+
+  const res = await fetch("http://localhost:5000/admin/delete-user", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ id })
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("Deleted ✅");
+    loadUsers();// loadUsers(); 
+  } else {
+    alert("Delete failed ❌");
+  }
+}
+
+
+
+</script>
+
+
+
+<script src="./js/admin-users.js"></script>
 </body>
 </html>

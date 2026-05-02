@@ -17,6 +17,14 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <body>
+<div id="loader" class="loader"></div>
+
+
+
+
+
+
+
 
   <div style="display:flex; justify-content:space-between; align-items:center;">
 
@@ -26,8 +34,21 @@
     🤖 AI Features
   </button>
 
+  <button class="btn primary" onclick="window.location.href='qr-pay.html'">
+  📷 Scan & Pay
+</button>
+</button>
 </div>
 
+
+
+
+
+<div style="margin:20px 0;">
+  <button onclick="openSmartHub()" class="primary-btn">
+    🚀 Open Smart Hub
+  </button>
+</div>
   <h3>🤖 AI Financial Advisor</h3>
 
 <button onclick="getAdvice()">Get AI Advice</button>
@@ -37,9 +58,9 @@
   <h2>💼 B2B Payments (Enterprise)</h2>
 
   <p>Send bulk payments, international transfers, and manage business payouts.</p>
-
-  <input id="b2bEmail" placeholder="Recipient Email / Company">
-  <input id="b2bAmount" placeholder="Amount" type="number">
+  <input id="b2bEmail" placeholder="Email">
+  <input id="b2bAmount" type="number" placeholder="Amount">
+  
   <select id="currency">
     <option value="INR">INR</option>
     <option value="USD">USD</option>
@@ -64,17 +85,98 @@
   
 
 
-<div class="payment-box">
-  <h2>💸 UPI Payment</h2>
 
-  <input id="upiId" placeholder="Enter UPI ID" />
-  <input id="amount" placeholder="Enter Amount" />
 
-  <button onclick="payUPI()">Pay UPI</button>
+
+
+<div class="payment-box glass fade-in"></div>
+
+
+
+
+
+<h2>UPI Payment</h2>
+
+<input id="upiId" placeholder="Enter UPI ID" />
+<input id="amount" placeholder="Enter Amount" />
+
+<button onclick="payUPI()">Pay UPI</button>
+
+
+
+<a href="crypto-market.html">
+  <button class="market-btn">
+    🚀 Open Crypto Market
+  </button>
+</a>
+
+
+
+
+
+
+<a href="ai-assistant.html">
+  <button class="action-btn">
+    🧠 Open AI Assistant
+  </button>
+</a>
 </div>
 
+
+
+
+
+<h2>Add Bank / UPI</h2>
+
+<input id="upi" placeholder="UPI ID (user@upi)">
+<input id="acc" placeholder="Account Number">
+<input id="ifsc" placeholder="IFSC Code">
+<input id="bankName" placeholder="Bank Name">
+
+<button onclick="saveBank()">Save Bank</button>
+
 <h3>Transactions</h3>
-<div id="transactionsList"></div>
+
+<table class="transaction-table">
+
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Amount</th>
+      <th>Type</th>
+      <th>Status</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+
+  <tbody id="transactionsTable"></tbody>
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -91,23 +193,17 @@
 <div class="card">
   💳 Payments: <span id="payments">0</span>
 </div>
-  <h2>💳 Card Payment</h2>
+  <h3>💳 Card Payment</h3>
 
-  <input id="cardNumber" placeholder="Card Number (1234 5678 9012 3456)">
-  
-  <input id="cardName" placeholder="Card Holder Name">
-  
-  <div style="display:flex; gap:10px;">
-    <input id="cardExpiry" placeholder="MM/YY">
-    <input id="cardCVV" placeholder="CVV">
-  </div>
 
-  <input id="cardAmount" type="number" placeholder="Enter Amount">
 
-  <button onclick="payCard()">Pay with Card</button>
+<input id="cardNumber" placeholder="Card Number" />
+<input id="cardName" placeholder="Card Holder Name" />
+<input id="cardAmount" type="number" placeholder="Enter Amount" />
 
+<button onclick="payCard()">Pay with Card</button>
 </div>
-<h2>Transactions</h2>
+
 
 <button onclick="downloadCSV()">Download CSV</button>
 
@@ -128,20 +224,45 @@
 
 <div class="payment-box">
 
-  <h2>🪙 Crypto Payment</h2>
   
-  <select id="cryptoType">
-    <option value="BTC">Bitcoin (BTC)</option>
-    <option value="ETH">Ethereum (ETH)</option>
-    <option value="USDT">USDT</option>
-  </select>
-
-  <input id="cryptoAmount" type="number" placeholder="Enter Amount">
-  <button onclick="payCrypto()">Pay with Crypto</button>
 
 
-  <button onclick="generateCrypto()">Generate Address</button>
+
   
+
+
+
+
+<h2>Crypto Payment</h2>
+
+<select id="cryptoType">
+  <option>Bitcoin</option>
+  <option>Ethereum</option>
+</select>
+
+<input id="cryptoAmount" placeholder="Enter Amount" />
+
+<button onclick="payCrypto()">Pay Crypto</button>
+</button>
+  
+</button>
+
+  
+  
+
+
+
+
+
+  <!-- Wallet Button -->
+<button class="btn primary" onclick="window.location.href='wallet.html'">
+  💰 Wallet
+</button>
+
+<!-- Payment Link Button -->
+<button class="btn primary" onclick="window.location.href='payment-link.html'">
+  🔗 Payment Link
+</button>
   <p id="cryptoAddress"></p>
   <div id="cryptoQR"></div>
 
@@ -167,12 +288,12 @@
 
 
 
-
-
-
-
-
 <h2>Transactions</h2>
+
+
+
+
+
 
 <div id="userList" style="
   background:#111;
@@ -184,7 +305,7 @@
 
 <!-- DASHBOARD -->
 <div id="dashboard" class="section">
-  <h1>Overview</h1>
+  
 
   <div class="grid">
     <div class="box">
@@ -285,7 +406,7 @@ style="padding:10px; margin-top:20px;">
 
   <button onclick="getUsers()">Users</button>
   <button onclick="getPayments()">Payments</button>
-
+  
   <pre id="adminData"></pre>
 </div>
 <div id="ai" class="section" style="display:none;">
@@ -293,16 +414,62 @@ style="padding:10px; margin-top:20px;">
 
   <div style="background:white; padding:20px; margin-top:10px; border-radius:10px;">
     
-    <h3>🔍 Fraud Detection</h3>
-    <button onclick="checkFraud()">Check Fraud</button>
-    <pre id="fraudResult"></pre>
+    
+    
+    
 
-    <hr>
 
-    <h3>📈 Portfolio Optimization</h3>
-    <button onclick="optimizePortfolio()">Optimize Portfolio</button>
-    <pre id="portfolioResult"></pre>
 
+
+
+
+
+
+    <div class="card">
+
+  <h2>🤖 Safe AI Advisor</h2>
+
+  <input
+    id="incomeInput"
+    type="number"
+    placeholder="Income"
+  />
+
+  <input
+    id="expenseInput"
+    type="number"
+    placeholder="Expenses"
+  />
+
+  <button onclick="getSafeAIAdvice()">
+    Get AI Advice
+  </button>
+
+  <div id="aiAdviceResult"></div>
+
+</div>
+
+
+<hr>
+
+
+<div class="card">
+
+  <h2>🛡 Fraud Detection</h2>
+
+  <input
+    id="fraudAmount"
+    type="number"
+    placeholder="Transaction Amount"
+  />
+
+  <button onclick="runFraudCheck()">
+    Check Fraud
+  </button>
+
+  <div id="fraudResult"></div>
+
+</div>
   </div>
 </div>
 
@@ -369,7 +536,132 @@ async function optimizePortfolio() {
 </script>
 
 
+
+
+<script>
+  const role = localStorage.getItem("role");
+
+  console.log("Logged in as:", role);
+
+  // Example: show admin section
+  if (role === "admin") {
+    document.getElementById("adminSection")?.classList.remove("hidden");
+  } else {
+    document.getElementById("adminSection")?.classList.add("hidden");
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 🔥 PREMIUM ABOUT / INFO SECTION -->
+<section class="premium-info-section">
+
+  <div class="info-card hero-card">
+    <h2>🚀 About FINANCESTABLE</h2>
+    <p>
+      FINANCESTABLE is a modern fintech ecosystem inspired by Google Pay,
+      Binance Pay, Stripe, and Bybit. The platform supports secure UPI
+      payments, crypto payments, AI security systems, fraud detection,
+      transaction tracking, and scalable payment infrastructure.
+    </p>
+  </div>
+
+  <div class="info-grid">
+
+    <div class="info-card">
+      <h3>🔐 Advanced Security</h3>
+      <p>
+        AI-powered authentication and fraud monitoring systems help protect
+        user accounts, payment flows, and transaction integrity.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>💳 Smart Payments</h3>
+      <p>
+        Supports UPI payments, crypto transactions, wallet infrastructure,
+        real-time transaction history, and scalable fintech architecture.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>📊 Transaction Monitoring</h3>
+      <p>
+        Users and admins can monitor payment history, crypto activity,
+        successful transfers, and platform analytics.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>🌍 Scalable Infrastructure</h3>
+      <p>
+        Built using MongoDB, Node.js, TypeScript, and modern frontend systems
+        for scalable fintech growth.
+      </p>
+    </div>
+
+  </div>
+
+  <div class="important-box">
+    <h2>⭐ Important Information</h2>
+
+    <ul>
+      <li>✔ Secure MongoDB cloud storage</li>
+      <li>✔ Crypto + UPI transaction support</li>
+      <li>✔ AI fraud detection foundation</li>
+      <li>✔ Responsive fintech dashboard</li>
+      <li>✔ Real transaction history tracking</li>
+      <li>✔ Admin monitoring system</li>
+      <li>✔ Future-ready scalable architecture</li>
+    </ul>
+  </div>
+
+  <div class="footer-section">
+    <h3>FINANCESTABLE</h3>
+    <p>
+      Secure Payments • Crypto Infrastructure • AI Security • Fintech Innovation
+    </p>
+
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms & Conditions</a>
+      <a href="#">Support</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+
+</section>
+
+
+
+
+
+
+
+<script src="js/ui.js"></script>
 <script src="js/app.js"></script>
+<script src="./js/ai-safe.js"></script>
+<script src="./js/dashboard-transactions.js"></script>
+
+
 
 </body>
 </html>

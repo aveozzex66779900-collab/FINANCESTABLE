@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Success</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:
+        linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+        url('https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1600&auto=format&fit=crop');
+      background-size:cover;
+      background-position:center;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      overflow:hidden;
+      color:white;
+    }
+
+    .success-container{
+      width:90%;
+      max-width:700px;
+      background:rgba(15,23,42,0.85);
+      backdrop-filter:blur(18px);
+      border-radius:30px;
+      padding:50px;
+      text-align:center;
+      box-shadow:0 15px 60px rgba(0,0,0,0.5);
+      animation:fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn{
+      from{
+        opacity:0;
+        transform:translateY(40px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    .success-icon{
+      width:140px;
+      height:140px;
+      background:linear-gradient(135deg,#10b981,#22c55e);
+      border-radius:50%;
+      margin:auto;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-size:70px;
+      animation:pulse 2s infinite;
+      box-shadow:0 0 40px rgba(34,197,94,0.5);
+    }
+
+    @keyframes pulse{
+      0%{transform:scale(1)}
+      50%{transform:scale(1.08)}
+      100%{transform:scale(1)}
+    }
+
+    h1{
+      margin-top:30px;
+      font-size:42px;
+    }
+
+    .success-text{
+      color:#cbd5e1;
+      margin-top:15px;
+      font-size:18px;
+      line-height:1.8;
+    }
+
+    .payment-details{
+      margin-top:35px;
+      background:#1e293b;
+      border-radius:20px;
+      padding:30px;
+      text-align:left;
+    }
+
+    .detail-row{
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:18px;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      padding-bottom:12px;
+    }
+
+    .detail-row span:first-child{
+      color:#94a3b8;
+    }
+
+    .detail-row span:last-child{
+      font-weight:bold;
+    }
+
+    .home-btn{
+      margin-top:35px;
+      display:inline-block;
+      background:linear-gradient(135deg,#2563eb,#3b82f6);
+      padding:16px 35px;
+      border-radius:14px;
+      color:white;
+      text-decoration:none;
+      font-weight:bold;
+      transition:0.3s;
+      box-shadow:0 10px 30px rgba(37,99,235,0.4);
+    }
+
+    .home-btn:hover{
+      transform:translateY(-5px);
+    }
+
+    .floating{
+      position:absolute;
+      border-radius:50%;
+      background:rgba(255,255,255,0.08);
+      animation:float 12s infinite linear;
+    }
+
+    @keyframes float{
+      from{
+        transform:translateY(100vh) rotate(0deg);
+      }
+      to{
+        transform:translateY(-120vh) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="floating" style="width:100px;height:100px;left:10%;animation-duration:14s"></div>
+  <div class="floating" style="width:60px;height:60px;left:70%;animation-duration:11s"></div>
+  <div class="floating" style="width:140px;height:140px;left:40%;animation-duration:18s"></div>
+
+  <div class="success-container">
+
+    <div class="success-icon">✓</div>
+
+    <h1>Payment Successful</h1>
+
+    <p class="success-text">
+      Your transaction has been completed successfully.
+      FINANCESTABLE securely processed your payment using advanced fintech infrastructure.
+    </p>
+
+    <div class="payment-details">
+
+      <div class="detail-row">
+        <span>Transaction Type</span>
+        <span id="paymentType">Crypto Payment</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Amount</span>
+        <span id="paymentAmount">₹0</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Status</span>
+        <span style="color:#22c55e">SUCCESS</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Transaction ID</span>
+        <span id="txId"></span>
+      </div>
+
+      <div class="detail-row">
+        <span>Date</span>
+        <span id="txDate"></span>
+      </div>
+
+    </div>
+
+    <a href="dashboard.html" class="home-btn">
+      Back To Dashboard
+    </a>
+
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    const type = params.get("type") || "Payment";
+    const amount = params.get("amount") || "0";
+
+    document.getElementById("paymentType").innerText = type;
+    document.getElementById("paymentAmount").innerText = "₹" + amount;
+
+    document.getElementById("txId").innerText =
+      "TX-" + Math.random().toString(36).substring(2, 12).toUpperCase();
+
+    document.getElementById("txDate").innerText =
+      new Date().toLocaleString();
+  </script>
+
+</body>
+</html>
+
+

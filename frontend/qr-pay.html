@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scan & Pay</title>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: linear-gradient(135deg, #eef2f7, #ffffff);
+    }
+
+    h2 {
+      margin-top: 20px;
+    }
+
+    #reader {
+      width: 300px;
+      margin: auto;
+      margin-top: 20px;
+    }
+
+    #result {
+      margin-top: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      background: #4CAF50;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>📷 Scan & Pay</h2>
+
+  <div id="reader"></div>
+  <div id="result"></div>
+
+  <script>
+    let scanner;
+
+    function startScanner() {
+      scanner = new Html5QrcodeScanner("reader", {
+        fps: 10,
+        qrbox: 250
+      });
+
+      scanner.render((decodedText) => {
+        scanner.clear();
+        handleQR(decodedText);
+      });
+    }
+
+    function handleQR(data) {
+      console.log("QR:", data);
+
+      let upi = "Unknown";
+      let name = "Receiver";
+      let amount = 100;
+
+      try {
+        let params = new URLSearchParams(data.split("?")[1]);
+        upi = params.get("pa");
+        name = params.get("pn");
+        amount = params.get("am") || 100;
+      } catch (e) {
+        console.log("Invalid QR, fallback");
+      }
+
+      document.getElementById("result").innerHTML = `
+        <h3>${name}</h3>
+        <p>UPI: ${upi}</p>
+        <p>Amount: ₹${amount}</p>
+        <button onclick="confirmPayment('${amount}')">Pay Now</button>
+      `;
+    }
+
+    function confirmPayment(amount) {
+      fetch("http://localhost:5000/api/transaction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: localStorage.getItem("email"),
+          amount: amount,
+          method: "QR",
+          status: "success"
+        })
+      });
+
+      document.body.innerHTML = `
+        <h2 style="color:green;margin-top:50px;">✅ Payment Successful</h2>
+      `;
+
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 2000);
+    }
+
+    startScanner();
+  </script>
+
+</body>
+</html>

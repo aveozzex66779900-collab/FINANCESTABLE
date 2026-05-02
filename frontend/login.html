@@ -1,33 +1,167 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* 🔵 PAGE */
+    .login-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* 💎 MAIN BOX */
+    .auth-box {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 350px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      animation: fadeUp 0.6s ease;
+    }
+
+    .auth-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0f172a;
+    }
+
+    /* INPUTS */
+    .auth-box input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 1px solid #cbd5f5;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .auth-box input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+    }
+
+    /* BUTTON */
+    .auth-box button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #3b82f6, #60a5fa);
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .auth-box button:hover {
+      transform: scale(1.03);
+      box-shadow: 0 10px 20px rgba(59,130,246,0.3);
+    }
+
+    /* 🤖 AI SECURITY BOX */
+    .ai-security-box {
+      margin-top: 20px;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 350px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      animation: fadeUp 0.8s ease;
+    }
+
+    .ai-security-box h3 {
+      margin-bottom: 10px;
+      color: #0f172a;
+    }
+
+    .ai-security-box p {
+      font-size: 13px;
+      margin-bottom: 10px;
+      opacity: 0.7;
+    }
+
+    .ai-security-box button {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #22c55e, #4ade80);
+      color: white;
+      transition: 0.3s;
+    }
+
+    .ai-security-box button:hover {
+      transform: scale(1.03);
+    }
+
+    /* ✨ ANIMATION */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 📱 MOBILE */
+    @media(max-width:600px){
+      .auth-box, .ai-security-box {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
-<body class="center">
 
-<div class="auth-box">
-  <h2>Login</h2>
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  
+<body class="login-page">
 
-  <button onclick="loginUser(
-  document.getElementById('email').value,
-  document.getElementById('password').value
-)">
-  Login
-</button>
-  <p id="msg"></p>
-</div>
+  <!-- 🔐 LOGIN BOX -->
+  <div class="auth-box">
+    <h2>Login</h2>
+     
 
+    <input id="email" type="email" placeholder="Enter Email" />
+    <input id="password" type="password" placeholder="Enter Password" />
+    <button onclick="login()">Login</button>
 
-<div class="ai-security-box">
-  <h3>🛡️ AI Security Check</h3>
-  <p id="aiStatus">Checking...</p>
+    <p id="msg"></p>
+  </div>
 
-  <button onclick="runAISecurity()">Run AI Check</button>
-  <button onclick="biometricLogin()">🔐 Biometric Login</button>
-</div>
-<script src="js/app.js"></script>
+  <!-- 🤖 AI SECURITY -->
+  <div class="ai-security-box">
+    <h3>🛡️ AI Security Check</h3>
+    <p id="aiStatus">Checking...</p>
+
+    <button onclick="runAISecurity()">Run AI Check</button>
+    <button onclick="biometricLogin()">🔐 Biometric Login</button>
+  </div>
+
+  <script src="js/app.js"></script>
+
 </body>
 </html>
