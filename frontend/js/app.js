@@ -162,7 +162,8 @@ window.login = async function () {
   if (role === "admin") {
     window.location.href = "/frontend/admin.html";
   } else {
-    window.location.href = "/frontend/dashboard.html";
+    
+    window.location.href = "/dashboard.html";
   }
 }
     
