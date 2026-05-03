@@ -249,38 +249,44 @@ app.post("/webhook/payment", express.raw({ type: "*/*" }), async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-app.get("/api/transactions", async (req, res) => {
+app.get("/api/dashboard/transactions", async (req, res) => {
   try {
-    const email = req.query.email as string | undefined;
-
-    const filter: any = {};
-    if (email) filter.email = email;
-
-    const transactions = await Transaction.find(filter);
-
     res.json({
       success: true,
-      transactions
+      transactions: []
     });
 
   } catch (err) {
     console.error(err);
-    res.json({
+
+    res.status(500).json({
       success: false,
-      message: "Failed to load transactions"
+      transactions: []
     });
   }
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
+app.get("/api/user", async (req, res) => {
+  res.json({
+    success: true,
+    user: {
+      name: "Admin",
+      email: "admin@gmail.com"
+    }
+  });
+});
 
 
 
@@ -976,29 +982,7 @@ await Transaction.findOne({
 
 
 
-app.get("/api/users", async (req, res) => {
 
-  try {
-
-    const users = await User.find();
-
-    res.status(200).json({
-      success: true,
-      users
-    });
-
-  } catch (error) {
-
-    console.log("USERS LOAD ERROR:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to load users"
-    });
-
-  }
-
-});
 app.post("/api/user/update-profile", async (req, res) => {
   try {
     const { email, upiId, accountNumber, ifsc, bankName } = req.body;
