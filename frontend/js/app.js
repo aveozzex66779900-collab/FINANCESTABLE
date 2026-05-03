@@ -882,6 +882,11 @@ async function getAdvice(data) {
 
 
 
+
+
+
+
+
 async function runAISecurity(){
   const status = document.getElementById("aiStatus");
 

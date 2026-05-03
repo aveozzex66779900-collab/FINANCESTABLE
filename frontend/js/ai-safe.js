@@ -33,7 +33,7 @@ async function runFraudCheck() {
       Number(amountInput.value || 0);
 
     const response = await fetch(
-      `${API_BASE}/api/premium-ai/fraud-check`,
+      `${API}/api/premium-ai/fraud-check`,
       {
         method: "POST",
         headers: {

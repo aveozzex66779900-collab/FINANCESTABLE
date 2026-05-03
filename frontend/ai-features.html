@@ -252,6 +252,34 @@ async function checkFraud() {
 
 
 
+async function getAIAdvice() {
+  try {
+    const response = await fetch(`${API}/api/premium-ai/advice`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        income: 100000,
+        expenses: 45000
+      })
+    });
+
+    const data = await response.json();
+
+    console.log("AI Advice:", data);
+
+    alert(data.advice || "AI analysis completed");
+
+  } catch (err) {
+    console.error("AI ERROR:", err);
+    alert("AI request failed");
+  }
+}
+
+
+
+
 </script>
 <script src="js/config.js"></script>
 <script src="js/app.js"></script>
