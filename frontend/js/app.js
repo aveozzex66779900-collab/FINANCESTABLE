@@ -240,7 +240,7 @@ async function loadUsers() {
 
   try {
 
-    const response = await fetch("http://localhost:5000/api/users");
+    const response = await fetch(`${API}/api/user`);
 
     
     
@@ -699,7 +699,7 @@ async function loadUsers() {
 
   try {
 
-    const response = await fetch("http://localhost:5000/api/users");
+    const response = await fetch(`${API}/api/user`);
 
     const data = await response.json();
 
