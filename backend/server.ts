@@ -300,81 +300,33 @@ app.get("/api/transactions", async (req, res) => {
 
 
 
-app.post("/api/transaction", async (req, res) => {
+app.post("/api/transactions", async (req, res) => {
   try {
-    console.log("🚀 B2B TRANSACTION START");
+    const { email, amount, type, upi } = req.body;
 
-    const { email, amount, type = "b2b", status = "SUCCESS" } = req.body;
-
-    console.log("📥 Incoming:", { email, amount });
-
-    // ✅ VALIDATION
-    if (!email || !amount || amount <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid email or amount"
-      });
-    }
-
-    // ✅ FIND USER (CRITICAL FIX)
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
-    }
-
-    // ✅ CREATE TRANSACTION (FIXED userId)
-    const tx = await Transaction.create({
-      userId: user._id, // 🔥 THIS WAS MISSING
-      email,
-      amount,
-      type,
-      status
-    });
-
-    // =========================
-    // 🔥 LEDGER (SAFE ADD)
-    // =========================
-
-    const last = await Ledger.findOne({ userId: user._id }).sort({ createdAt: -1 });
-
-    const prevBalance = last ? last.balance : 0;
-    const newBalance = prevBalance - amount;
-
-    await Ledger.create({
-      userId: user._id,
-      email,
-      amount,
-      type: "DEBIT",
-      category: type,
-      balance: newBalance,
-      referenceId: tx._id
-    });
-
-    console.log("✅ TRANSACTION SUCCESS:", tx._id);
-
-    // ✅ RESPONSE (EXTENDED, NOT BREAKING)
-    res.json({
+    return res.json({
       success: true,
-      transactionId: tx._id,
-      email,
-      amount,
-      balance: newBalance
+      message: "Transaction created",
+      transaction: {
+        email,
+        amount,
+        type,
+        upi,
+        status: "success"
+      }
     });
 
   } catch (err) {
-    console.error("❌ TRANSACTION ERROR:", err);
+    console.error("TRANSACTION ERROR:", err);
 
     res.status(500).json({
       success: false,
-      message: "Transaction DB failed",
-      debug: err.message // 👈 helps debugging
+      message: "Server error"
     });
   }
 });
+
+    
 
 function detectFraud(userId: string, amount: number, history: any[]) {
 
