@@ -325,7 +325,7 @@ window.payUPI = async function () {
     }
 
     // ✅ API call
-    const res = await fetch("http://localhost:5000/api/transaction", {
+    const res = await fetch(`${API}/api/transactions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -387,7 +387,7 @@ async function payCard() {
 
     console.log("💳 CARD PAYMENT:", { email, amount });
 
-    const res = await fetch("http://localhost:5000/api/transaction", {
+    const res = await fetch(`${API}/api/transactions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -465,7 +465,7 @@ async function payCrypto() {
 
     console.log("🚀 CRYPTO PAYMENT:", { email, type, amount });
 
-    const res = await fetch("http://localhost:5000/api/transaction", {
+    const res = await fetch(`${API}/api/transactions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -956,7 +956,7 @@ async function adminLogin() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  const res = await fetch("http://localhost:5000/login", {
+  const res = await fetch(`${API}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
