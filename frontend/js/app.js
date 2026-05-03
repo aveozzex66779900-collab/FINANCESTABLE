@@ -126,7 +126,7 @@ window.login = async function () {
 
     console.log("🔐 Attempt login:", email);
 
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await fetch(`${API}/api/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -207,7 +207,7 @@ window.login = async function () {
 
   console.log("🚀 Sending:", { name, email, password }); // ADD THIS
 
-  const res = await fetch("http://localhost:5000/api/auth/signup", {
+  const res = await fetch(`${API}/api/auth/signup`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
