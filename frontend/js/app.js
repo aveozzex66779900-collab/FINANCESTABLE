@@ -17,7 +17,7 @@ window.onunhandledrejection = function (event) {
 
 const API = {
   async getAdvice(data) {
-    const res = await fetch("http://localhost:5000/api/ai/advice", {
+    const res = await fetch(`${API}/api/ai/advice`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -607,8 +607,7 @@ window.loadTransactions = async function () {
 
     const email = localStorage.getItem("email");
 
-    const res = await fetch(
-      `http://localhost:5000/api/transactions?email=${email}`
+    const res = await fetch(`${API}/api/transactions?email=${email}`
     );
 
     const data = await res.json();
@@ -798,8 +797,7 @@ window.sendB2B = async function () {
       return;
     }
 
-    const response = await fetch(
-      "http://localhost:5000/api/b2b/pay",
+    const response = await fetch(`${API}/api/b2b/pay`,
       {
         method: "POST",
         headers: {
@@ -861,43 +859,39 @@ window.sendB2B = async function () {
 
 
 
-async function getAdvice() {
+
+
+
+
+
+
+
+
+
+
+async function getAdvice(data) {
+  const res = await fetch(`${API}/api/ai/advice`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  const text = await res.text();
+
   try {
-    const email = localStorage.getItem("email");
-
-    if (!email) {
-      alert("Login required ❌");
-      return;
-    }
-
-    const res = await fetch("http://localhost:5000/api/premium-ai/advice", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email })
-    });
-
-    const data = await res.json();
-
-    console.log("AI RESPONSE:", data);
-
-    if (data.success) {
-      showAdviceUI(data.advice);
-    } else {
-      alert("AI failed ❌");
-    }
-
+    return JSON.parse(text);
   } catch (err) {
-    console.error("AI ERROR:", err);
-    alert("Server error ❌");
+    console.error("❌ Not JSON:", text);
+    throw new Error("Invalid JSON response");
   }
 }
 async function runAISecurity(){
   const status = document.getElementById("aiStatus");
 
   try{
-    const res = await fetch("http://localhost:5000/api/ai-security");
+    const res = await fetch(`${API}/api/ai-security`);
     const data = await res.json();
 
     console.log("AI RESPONSE:", data);
@@ -985,7 +979,7 @@ async function addUser() {
   const email = document.getElementById("newEmail").value;
   const password = document.getElementById("newPassword").value;
 
-  const res = await fetch("http://localhost:5000/admin/add-user", {
+  const res = await fetch(`${API}/api/admin/add-user`, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ email, password })
@@ -1009,7 +1003,7 @@ async function deleteUser(id) {
   if (!confirm("Delete this user?")) return;
 
   try {
-    const res = await fetch("http://localhost:5000/admin/delete-user", {
+    const res = await fetch(`${API}/api/admin/delete-user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -1140,7 +1134,7 @@ function showAdviceUI(advice) {
 async function saveBank() {
   const email = localStorage.getItem("email");
 
-  const res = await fetch("http://localhost:5000/api/add-bank", {
+  const res = await fetchfetch(`${API}/api/add-bank`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -1168,7 +1162,7 @@ async function saveBank() {
 async function loadBalance() {
   const email = localStorage.getItem("email");
 
-  const res = await fetch(`http://localhost:5000/api/user?email=${email}`);
+  const res = await fetch(`${API}/api/user?email=${email}`);
   const data = await res.json();
 
   document.getElementById("balance").innerText =
@@ -1184,7 +1178,7 @@ function openSmartHub() {
 
 async function loadAdminAnalytics() {
   try {
-    const res = await fetch("http://localhost:5000/admin/analytics");
+    const res = await fetch(`${API}/api/admin/analytics`);
     const result = await res.json();
 
     if (!result.success) throw new Error("Failed");

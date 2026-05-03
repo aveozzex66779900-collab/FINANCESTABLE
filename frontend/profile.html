@@ -37,7 +37,7 @@ const email = localStorage.getItem("email");
 
 // LOAD PROFILE
 async function loadProfile() {
-  const res = await fetch(`http://localhost:5000/api/user/profile?email=${email}`);
+  const res = await fetch(`${API}/api/user/profile?email=${email}`);
   const user = await res.json();
 
   document.getElementById("email").value = user.email;
@@ -52,7 +52,7 @@ async function loadProfile() {
 
 // SAVE PROFILE
 async function saveProfile() {
-  await fetch("http://localhost:5000/api/user/update-profile", {
+  await fetch(`${API}api/user/update-profile`, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({

@@ -1,7 +1,7 @@
 console.log("🛡 AI SAFE MODULE LOADED");
 
-const API_BASE = "http://localhost:5000";
 
+const API_BASE = API;
 // =====================================================
 // PREMIUM AI ADVICE
 // =====================================================

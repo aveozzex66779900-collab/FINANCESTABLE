@@ -222,7 +222,7 @@ window.onload = loadUsers;
 
 async function loadUsers() {
   try {
-    const res = await fetch("http://localhost:5000/admin/users");
+    const res = await fetch(`${API}/api/admin/users`);
     const users = await res.json();
 
     const table = document.getElementById("usersTable");
@@ -262,7 +262,7 @@ async function addUser() {
   const email = document.getElementById("newEmail").value;
   const password = document.getElementById("newPassword").value;
 
-  const res = await fetch("http://localhost:5000/admin/add-user", {
+  const res = await fetch(`${API}/api/admin/add-user`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -283,7 +283,7 @@ async function addUser() {
 async function deleteUser(id) {
   if (!confirm("Delete this user?")) return;
 
-  const res = await fetch("http://localhost:5000/admin/delete-user", {
+  const res = await fetch(`${API}/api/admin/delete-user`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

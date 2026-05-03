@@ -4,8 +4,7 @@ async function loadDashboardTransactions() {
 
   try {
 
-    const response = await fetch(
-      "http://localhost:5000/dashboard/transactions"
+    const response = await fetch(`${API}/api/dashboard/transactions`
     );
 
     const data = await response.json();

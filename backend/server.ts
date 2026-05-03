@@ -410,7 +410,7 @@ mongoose.connect(process.env.MONGO_URI!)
     console.log("MongoDB Connected ✅");
 
     app.listen(5000, () => {
-      console.log("🚀 Server running on http://localhost:5000");
+      console.log("🚀 Server running on localhost 5000");
     });
   })
   .catch(err => console.log("DB Error ❌", err));
@@ -491,7 +491,7 @@ app.post("/pay-upi", async (req, res) => {
 
     // ⚡ Simulate gateway webhook (DEV ONLY)
     setTimeout(async () => {
-      await fetch("http://localhost:5000/webhook/payment", {
+        await fetch(`${process.env.BASE_URL || "http://localhost:5000"}/api/webhook/payment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

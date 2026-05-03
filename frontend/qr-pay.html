@@ -92,7 +92,7 @@
     }
 
     function confirmPayment(amount) {
-      fetch("http://localhost:5000/api/transaction", {
+      fetch(`${API}/api/transaction`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

@@ -25,9 +25,7 @@ async function buyCoin(){
     "buyAmount"
   ).value;
 
-  const res = await fetch(
-
-    "http://localhost:5000/exchange/buy",
+  const res = await fetch(`${API}/api/exchange/buy`,
 
     {
 

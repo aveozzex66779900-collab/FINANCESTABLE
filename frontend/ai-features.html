@@ -217,7 +217,7 @@ async function checkFraud() {
 
 
 
-    const res = await fetch ("http://localhost:5000/api/premium-ai/fraud-check", {
+    const res = await  fetch(`${API}/api/premium-ai/fraud-check`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
