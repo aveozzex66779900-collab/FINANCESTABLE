@@ -252,47 +252,31 @@ app.post("/webhook/payment", express.raw({ type: "*/*" }), async (req, res) => {
 // DOES NOT BREAK OLD FEATURES
 // ===============================
 
+
+
+
+
 app.get("/api/dashboard/transactions", async (req, res) => {
   try {
-    console.log("📦 Dashboard transactions requested");
-
-    // SAFE CHECK
-    if (!Transaction) {
-      return res.status(500).json({
-        success: false,
-        message: "Transaction model missing"
-      });
-    }
-
-    // LOAD LATEST TRANSACTIONS
-    const transactions = await Transaction
-      .find()
+    const transactions = await Transaction.find()
       .sort({ createdAt: -1 })
-      .limit(100);
+      .limit(50);
 
-    console.log("✅ Transactions loaded:", transactions.length);
-
-    // SAFE RESPONSE
-    return res.json({
+    res.json({
       success: true,
-      transactions
+      transactions: transactions || []
     });
 
   } catch (err) {
+    console.error("DASHBOARD TRANSACTIONS ERROR:", err);
 
-    console.error("❌ DASHBOARD TRANSACTIONS ERROR:", err);
-
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: "Failed to load transactions",
-      error: err.message
+      transactions: [],
+      message: "Failed to load transactions"
     });
   }
 });
-
-
-
-
 
 
 
