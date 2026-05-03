@@ -289,14 +289,29 @@ app.get("/api/dashboard/transactions", async (req, res) => {
 
 
 
+
 app.get("/api/user", async (req, res) => {
-  res.json({
-    success: true,
-    user: {
-      name: "Admin",
-      email: "admin@gmail.com"
-    }
-  });
+  try {
+
+    res.json({
+      success: true,
+      user: {
+        name: "admin",
+        email: "admin@gmail.com",
+        role: "admin"
+      }
+    });
+
+  } catch (error) {
+
+    console.error("USER API ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to load user"
+    });
+
+  }
 });
 
 
@@ -317,30 +332,37 @@ app.get("/api/user", async (req, res) => {
 
 
 
-app.post("/api/transactions", async (req, res) => {
-  try {
-    const { email, amount, type, upi } = req.body;
 
-    return res.json({
+    app.get("/api/dashboard/transactions", async (req, res) => {
+
+  try {
+
+    const transactions = await Transaction.find()
+      .sort({ createdAt: -1 })
+      .limit(50);
+
+    res.json({
       success: true,
-      message: "Transaction created",
-      transaction: {
-        email,
-        amount,
-        type,
-        upi,
-        status: "success"
-      }
+      transactions: Array.isArray(transactions)
+        ? transactions
+        : []
     });
 
-  } catch (err) {
-    console.error("TRANSACTION ERROR:", err);
+  } catch (error) {
+
+    console.error(
+      "DASHBOARD TRANSACTIONS ERROR:",
+      error
+    );
 
     res.status(500).json({
       success: false,
-      message: "Server error"
+      transactions: [],
+      message: "Failed to load transactions"
     });
+
   }
+
 });
 
     
@@ -657,7 +679,7 @@ app.post("/api/b2b/pay", async (req, res) => {
         message: "Missing fields"
       });
     }
-
+  
     // ✅ create transaction
     const tx = await Transaction.create({
 
@@ -680,7 +702,7 @@ app.post("/api/b2b/pay", async (req, res) => {
         currency || "INR"
 
     });
-
+  
     console.log("✅ B2B PAYMENT:", tx);
 
     res.json({
@@ -689,17 +711,24 @@ app.post("/api/b2b/pay", async (req, res) => {
       transaction: tx
     });
 
-  } catch (err: any) {
-
-    console.error("❌ B2B ERROR:", err);
-
-    res.status(500).json({
-      success: false,
-      message: "B2B payment failed",
-      error: err.message
-    });
-
   }
+
+
+
+ catch (error) {
+
+  console.error(
+    "B2B PAYMENT ERROR:",
+    error
+  );
+
+  res.status(500).json({
+    success: false,
+    message: "B2B payment failed",
+    error: error.message
+  });
+
+}
 
 });
 app.get("/create-db", async (req, res) => {
