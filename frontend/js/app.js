@@ -15,30 +15,6 @@ window.onunhandledrejection = function (event) {
 
 
 
-const API = {
-  async getAdvice(data) {
-    const res = await fetch(`${API}/api/ai/advice`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-
-    // ✅ SAFE PARSE
-    const text = await res.text();
-
-    try {
-      return JSON.parse(text);
-    } catch (err) {
-      console.error("❌ Not JSON:", text);
-      throw new Error("Invalid JSON response");
-    }
-  }
-};
-
-
-
 
 
 
@@ -865,8 +841,6 @@ window.sendB2B = async function () {
 
 
 
-
-
 async function getAdvice(data) {
   try {
     console.log("🤖 Sending AI advice request...");
@@ -904,6 +878,8 @@ async function getAdvice(data) {
     };
   }
 }
+
+
 
 
 async function runAISecurity(){
