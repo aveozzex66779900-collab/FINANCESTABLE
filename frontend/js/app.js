@@ -608,6 +608,25 @@ window.loadTransactions = async function () {
 
     let total = 0;
 
+
+
+
+
+
+
+
+
+
+    if (!Array.isArray(transactions)) {
+
+  console.error(
+    "Transactions is not array:",
+    transactions
+  );
+
+  transactions = [];
+}
+
     transactions.forEach((tx) => {
 
       total += Number(tx.amount || 0);
