@@ -225,3 +225,6 @@ async function loginSafe() {
   }
 
 }
+
+window.signupSafe = signupSafe;
+window.loginSafe = loginSafe;
