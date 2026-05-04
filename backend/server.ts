@@ -20,7 +20,6 @@ import User from "./models/User";
 
 
 import Transaction from "./models/transaction";
-import authRoutes from "./routes/auth";
 import aiRoutes from "./routes/ai";
 import dotenv from "dotenv";
 
@@ -35,7 +34,7 @@ import redis from "./redis";// import Redis from "redis";
 import dashboardTransactions from "./dashboardTransactions";
 import aiSafeRoutes from "./routes/ai-safe";
 import premiumAI from "./routes/ai-premium";
-
+import authRoutes from "./auth/auth.routes";
 
 
 dotenv.config();
@@ -59,6 +58,11 @@ app.use(
   premiumAI
 );
 
+
+app.use(
+  "/api/auth",
+  authRoutes
+);
 
 
 
