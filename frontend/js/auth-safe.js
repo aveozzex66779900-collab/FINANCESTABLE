@@ -229,6 +229,46 @@ async function loginSafe() {
 
 }
 
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  console.log("✅ DOM LOADED");
+
+  // SIGNUP
+  const signupBtn =
+    document.getElementById("signupBtn");
+
+  if (signupBtn) {
+
+    console.log("✅ signupBtn found");
+
+    signupBtn.addEventListener(
+      "click",
+      signupSafe
+    );
+
+  }
+
+  // LOGIN
+  const loginBtn =
+    document.getElementById("loginBtn");
+
+  if (loginBtn) {
+
+    console.log("✅ loginBtn found");
+
+    loginBtn.addEventListener(
+      "click",
+      loginSafe
+    );
+
+  }
+
+});
 window.signupSafe = signupSafe;
 window.loginSafe = loginSafe;
 
