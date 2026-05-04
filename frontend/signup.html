@@ -40,25 +40,7 @@
   
 
   <!-- ✅ SAFE EVENT BINDING -->
-  <script>
-    
-
-      if (btn) {
-        btn.addEventListener("click", () => {
-          console.log("Signup button clicked ✅");
-
-          // call your existing function
-          if (typeof signup === "function") {
-            signup();
-          } else {
-            console.error("❌ signup() not found in app.js");
-          }
-        });
-      } else {
-        console.error("❌ signupBtn not found");
-      }
-    ;
-  </script>
+  
 
   <script src="js/config.js"></script>
 <script src="./js/auth-safe.js"></script>

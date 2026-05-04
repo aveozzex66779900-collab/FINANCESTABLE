@@ -1257,7 +1257,25 @@ function playSuccessSound() {
 
 
 
+// =======================
+// SAFE COMPATIBILITY BRIDGE
+// =======================
 
+if (!window.signup && window.signupSafe) {
+
+  console.log("✅ signup bridge loaded");
+
+  window.signup = window.signupSafe;
+
+}
+
+if (!window.login && window.loginSafe) {
+
+  console.log("✅ login bridge loaded");
+
+  window.login = window.loginSafe;
+
+}
 
 
 
