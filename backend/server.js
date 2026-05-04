@@ -155,6 +155,43 @@ app.get("/api/transactions", async (req, res) => {
         });
     }
 });
+
+
+
+
+
+
+
+
+app.get("/api/dashboard/transactions", async (req, res) => {
+
+  try {
+
+    const transactions = await Transaction.find()
+      .sort({ createdAt: -1 })
+      .limit(50);
+
+    res.json({
+      success: true,
+      transactions
+    });
+
+  } catch (error) {
+
+    console.error(
+      "DASHBOARD TRANSACTIONS ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      transactions: [],
+      message: "Failed to load transactions"
+    });
+
+  }
+
+});
 app.post("/api/transaction", async (req, res) => {
     try {
         console.log("🚀 B2B TRANSACTION START");

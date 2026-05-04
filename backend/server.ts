@@ -291,6 +291,7 @@ app.get("/api/dashboard/transactions", async (req, res) => {
 
 
 app.get("/api/user", async (req, res) => {
+
   try {
 
     res.json({
@@ -304,7 +305,10 @@ app.get("/api/user", async (req, res) => {
 
   } catch (error) {
 
-    console.error("USER API ERROR:", error);
+    console.error(
+      "USER API ERROR:",
+      error
+    );
 
     res.status(500).json({
       success: false,
@@ -312,58 +316,29 @@ app.get("/api/user", async (req, res) => {
     });
 
   }
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    app.get("/api/dashboard/transactions", async (req, res) => {
-
-  try {
-
-    const transactions = await Transaction.find()
-      .sort({ createdAt: -1 })
-      .limit(50);
-
-    res.json({
-      success: true,
-      transactions: Array.isArray(transactions)
-        ? transactions
-        : []
-    });
-
-  } catch (error) {
-
-    console.error(
-      "DASHBOARD TRANSACTIONS ERROR:",
-      error
-    );
-
-    res.status(500).json({
-      success: false,
-      transactions: [],
-      message: "Failed to load transactions"
-    });
-
-  }
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
     
 

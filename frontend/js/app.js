@@ -591,7 +591,7 @@ window.loadTransactions = async function () {
     console.log("TRANSACTIONS:", data);
 
     // ✅ SAFE fallback
-    const transactions = data.transactions || data || [];
+    let transactions = data.transactions || data || [];
 
     const txList =
       document.getElementById("txList");
