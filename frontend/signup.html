@@ -41,10 +41,7 @@
 
   <!-- ✅ SAFE EVENT BINDING -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      console.log("DOM LOADED ✅");
-
-      const btn = document.getElementById("signupBtn");
+    
 
       if (btn) {
         btn.addEventListener("click", () => {
@@ -60,7 +57,7 @@
       } else {
         console.error("❌ signupBtn not found");
       }
-    });
+    ;
   </script>
 
   <script src="js/config.js"></script>
