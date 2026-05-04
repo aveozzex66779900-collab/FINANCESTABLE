@@ -25,7 +25,10 @@
 <input id="signup-password" />
     <!-- ❌ REMOVED onclick -->
     <!-- ✅ Using JS event listener -->
-    <button onclick="signupSafe()">
+    
+
+
+<button id="signupBtn">
   Signup
 </button>
     <p id="msg"></p>
@@ -59,10 +62,16 @@
     });
   </script>
 
+<script src="./js/auth-safe.js"></script>
+
+
+document.addEventListener("DOMContentLoaded", () => {
 
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>
 
-<script src="./js/auth-safe.js"></script>
+
+
+
 </body>
 </html>
