@@ -123,3 +123,5 @@ async function loginUser() {
   }
 
 }
+
+window.authPost = authPost;
