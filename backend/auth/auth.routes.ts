@@ -5,9 +5,8 @@ import {
   login
 } from "./auth.controller";
 
-const router = express.Router();
-
-
+const router =
+  express.Router();
 
 router.post(
   "/signup",
@@ -18,7 +17,5 @@ router.post(
   "/login",
   login
 );
-
-
 
 export default router;

@@ -2,24 +2,22 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import bcrypt from "bcrypt"; 
 import adminUsersRoutes from "./adminUsers";
 import jwt from "jsonwebtoken";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
-import { audit } from "./middleware/audit";
-import { addToQueue, processQueue } from "./services/queue";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { checkSecurity } from "./middleware/security";
 import { log } from "./middleware/logger";
 import User from "./models/User";
+import Transaction
+from "./models/transaction";
 
 
 
 
-import Transaction from "./models/transaction";
 import aiRoutes from "./routes/ai";
 import dotenv from "dotenv";
 
@@ -32,7 +30,6 @@ import { globalErrorHandler } from "./middleware/errorHandler";
 import { Ledger } from "./models/ledger";
 import redis from "./redis";// import Redis from "redis";
 import dashboardTransactions from "./dashboardTransactions";
-import aiSafeRoutes from "./routes/ai-safe";
 import premiumAI from "./routes/ai-premium";
 import authRoutes from "./auth/auth.routes";
 
@@ -52,7 +49,6 @@ app.use(express.json());
 
 app.use("/admin", adminUsersRoutes);
 app.use("/", dashboardTransactions);
-app.use("/", aiSafeRoutes);
 app.use(
   "/api/premium-ai",
   premiumAI
@@ -103,28 +99,6 @@ app.use(express.urlencoded({ extended: true }));
 
 
 
-app.post("/api/auth/signup", async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-
-    // 🔐 HASH PASSWORD
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = new User({
-      name,
-      email,
-      password: hashedPassword
-    });
-
-    await user.save();
-
-    res.json({ success: true });
-
-  } catch (err) {
-    console.error(err);
-    res.json({ success: false, message: "Signup failed" });
-  }
-});
 
 // ✅ ADD THIS ABOVE ROUTES
 const authMiddleware = (req: any, res: any, next: any) => {
@@ -205,41 +179,7 @@ app.use(
     }
   })
 );
-app.post("/webhook/payment", express.raw({ type: "*/*" }), async (req, res) => {
-  try {
-    const signature = req.headers["x-webhook-signature"];
 
-    // 🔐 OPTIONAL (recommended for production)
-    // verify signature here
-
-    const body = JSON.parse(req.body.toString());
-
-    console.log("📩 WEBHOOK RECEIVED:", body);
-
-    const { email, amount, type, status } = body;
-
-    if (!email || !amount) {
-      return res.status(400).send("Invalid webhook");
-    }
-
-    // ✅ Save verified transaction
-    const tx = await Transaction.create({
-      email,
-      amount,
-      method: "UPI",
-      type,
-      status: status || "success"
-    });
-
-    console.log("✅ VERIFIED & SAVED:", tx._id);
-
-    res.status(200).send("OK");
-
-  } catch (err) {
-    console.error("❌ WEBHOOK ERROR:", err);
-    res.status(500).send("Webhook failed");
-  }
-});
 
 
 
@@ -548,27 +488,7 @@ app.get("/admin/payments", (req, res) => {
 
 
 
-app.post("/api/auth/login", async (req, res) => {
-  const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    return res.json({ success: false, message: "User not found" });
-  }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-
-  if (!isMatch) {
-    return res.json({ success: false, message: "Wrong password" });
-  }
-
-  // ✅ RETURN REAL ROLE FROM DB
-  res.json({
-    success: true,
-    role: user.role || "user"
-  });
-});
 
 app.post("/crypto-address", async (req, res) => {
   const { type, amount } = req.body;
@@ -710,23 +630,7 @@ app.post("/api/b2b/pay", async (req, res) => {
 }
 
 });
-app.get("/create-db", async (req, res) => {
-  try {
-    const hashedPassword = await bcrypt.hash("123456", 10);
 
-    const user = new User({
-      name: "Shanu",
-      email: "test@test.com",
-      password: hashedPassword
-    });
-
-    await user.save();
-
-    res.send("Database Created ✅");
-  } catch (err) {
-    res.send("Error ❌");
-  }
-});
 app.post("/crypto", authMiddleware, async (req: any, res) => {
   try {
     const { type, amount } = req.body;
@@ -862,57 +766,15 @@ app.get("/admin/users", async (req, res) => {
 
 });
 
-app.get("/create-admin", async (req, res) => {
-  try {
-    const hashed = await bcrypt.hash("123456", 10);
 
-    const admin = await User.findOneAndUpdate(
-      { email: "admin@gmail.com" },
-      {
-        email: "admin@gmail.com",
-        password: hashed,
-        role: "admin"
-      },
-      { upsert: true, new: true }
-    );
 
-    res.json({
-      success: true,
-      message: "Admin ensured",
-      admin
-    });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.post("/admin/add-user", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const hashedPassword = await bcrypt.hash(password, 10); // ✅ ADD
-
-    const user = new User({
-      email,
-      password: hashedPassword, // ✅ FIX
-      role: email === "admin@gmail.com" ? "admin" : "user",
-      wallet: { balance: 0 },
-      bank: {}
-    });
     
 
     
 
 
-    await user.save();
 
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ success: false });
-  }
-});
 app.post("/admin/block-user", async (req, res) => {
   try {
     const { id } = req.body;

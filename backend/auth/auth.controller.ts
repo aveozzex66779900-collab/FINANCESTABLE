@@ -1,18 +1,15 @@
+
 import User from "./auth.model";
 
+import bcrypt from "bcryptjs";
+
 import {
-  hashPassword,
-  comparePassword,
-  createToken
+  comparePassword
 } from "./auth.utils";
-
-
-
-// ==========================
-// SIGNUP
-// ==========================
-
-export async function signup(req, res) {
+export async function signup(
+  req: any,
+  res: any
+) {
 
   try {
 
@@ -22,10 +19,11 @@ export async function signup(req, res) {
       password
     } = req.body;
 
-
-
-    // validation
-    if (!name || !email || !password) {
+    if (
+      !name ||
+      !email ||
+      !password
+    ) {
 
       return res.status(400).json({
         success: false,
@@ -35,58 +33,45 @@ export async function signup(req, res) {
     }
 
 
+    const existing =
+  await User.findOne({
+    email
+  } as any);
 
-    // check existing user
-    const existingUser = await User.findOne({
-      email: email
-    });
+if (existing) {
 
-    if (existingUser) {
+  return res.status(400).json({
 
-      return res.status(400).json({
-        success: false,
-        message: "User already exists"
-      });
+    success: false,
 
+    message:
+      "Email already exists"
+
+  });
+
+}
+
+const hashed =
+  await bcrypt.hash(
+    password,
+    10
+  );
+
+const user =
+  await User.create({
+
+    name,
+    email,
+    password: hashed,
+
+    wallet: {
+      balance: 0
     }
 
-
-
-    // hash password
-    const hashedPassword =
-      await hashPassword(password);
-
-
-
-    // create user
-    const user = await User.create({
-
-      name,
-
-      email,
-
-      password: hashedPassword,
-
-      wallet: {
-        balance: 0
-      }
-
-    });
-
-
-
-    // token
-    const token = createToken(user);
-
-
-
-    res.json({
+  });
+    return res.json({
 
       success: true,
-
-      message: "Signup success",
-
-      token,
 
       user: {
         id: user._id,
@@ -96,28 +81,38 @@ export async function signup(req, res) {
 
     });
 
-  }
+  } catch (err: any) {
 
-  catch (err) {
+  console.error(
+    "❌ SIGNUP FULL ERROR:"
+  );
 
-    console.error("❌ SIGNUP ERROR:", err);
+  console.error(err);
 
-    res.status(500).json({
-      success: false,
-      message: "Signup failed"
-    });
+  return res.status(500).json({
 
-  }
+    success: false,
+
+    message:
+      err?.message ||
+      "Signup failed",
+
+    stack:
+      err?.stack,
+
+    name:
+      err?.name
+
+  });
 
 }
 
+}
 
-
-// ==========================
-// LOGIN
-// ==========================
-
-export async function login(req, res) {
+export async function login(
+  req: any,
+  res: any
+) {
 
   try {
 
@@ -126,25 +121,11 @@ export async function login(req, res) {
       password
     } = req.body;
 
-
-
-    // validation
-    if (!email || !password) {
-
-      return res.status(400).json({
-        success: false,
-        message: "Missing email or password"
-      });
-
-    }
-
-
-
-    // find user
-    const user = await User.findOne({
-      email: email
-    });
-
+    const user =
+    
+      await User.findOne({
+  email
+} as any);
     if (!user) {
 
       return res.status(404).json({
@@ -154,16 +135,11 @@ export async function login(req, res) {
 
     }
 
-
-
-    // compare password
     const valid =
       await comparePassword(
         password,
         user.password
       );
-
-
 
     if (!valid) {
 
@@ -174,38 +150,27 @@ export async function login(req, res) {
 
     }
 
-
-
-    // token
-    const token = createToken(user);
-
-
-
-    res.json({
+    return res.json({
 
       success: true,
 
-      message: "Login success",
-
-      token,
-
       user: {
         id: user._id,
-        name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role
       }
 
     });
 
-  }
+  } catch (err: any) {
 
-  catch (err) {
+    return res.status(500).json({
 
-    console.error("❌ LOGIN ERROR:", err);
-
-    res.status(500).json({
       success: false,
-      message: "Login failed"
+
+      message:
+        err.message || "Login failed"
+
     });
 
   }

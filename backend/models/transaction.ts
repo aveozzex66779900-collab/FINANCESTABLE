@@ -1,15 +1,46 @@
 import mongoose from "mongoose";
 
+const TransactionSchema =
+  new mongoose.Schema({
 
-const transactionSchema = new mongoose.Schema({
-  userId: String,
-  email: String,        // ✅ use ONLY this
-  amount: Number,
-  status: String,
-  method: String,
-  type: String,
-  paymentId: String
-}, { timestamps: true });
+    userId: {
+      type: String
+    },
 
+    email: {
+      type: String
+    },
 
-export default mongoose.models.Transaction || mongoose.model("Transaction", transactionSchema);
+    amount: {
+      type: Number,
+      default: 0
+    },
+
+    type: {
+      type: String,
+      default: "payment"
+    },
+
+    status: {
+      type: String,
+      default: "success"
+    },
+
+    method: {
+      type: String,
+      default: "wallet"
+    }
+
+  }, {
+    timestamps: true
+  });
+
+const Transaction =
+  mongoose.models.Transaction ||
+
+  mongoose.model(
+    "Transaction",
+    TransactionSchema
+  );
+
+export default Transaction;
