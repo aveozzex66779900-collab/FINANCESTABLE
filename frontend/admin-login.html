@@ -1,49 +1,106 @@
-<script src="./js/config.js"></script>
-<script src="./js/auth/auth-api.js"></script>
+<!DOCTYPE html>
+<html lang="en">
 
-<script>
-async function login() {
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
 
-  const email =
-    document.getElementById("email").value;
+  <title>Admin Login</title>
 
-  const password =
-    document.getElementById("password").value;
+  <link
+    rel="stylesheet"
+    href="./css/style.css"
+  />
+</head>
 
-  try {
+<body>
 
-    const result =
-      await authPost("/api/auth/login", {
-        email,
-        password
-      });
+  <div class="login-container">
 
-    console.log(result);
+    <div class="login-box">
 
-    if (!result.success) {
-      alert(result.message);
-      return;
+      <h2>🔐 Admin Login</h2>
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Admin Email"
+      />
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+      />
+
+      <button
+        id="adminLoginBtn"
+        onclick="login()"
+      >
+        Login
+      </button>
+
+    </div>
+
+  </div>
+
+  <script src="./js/config.js"></script>
+  <script src="./js/auth/auth-api.js"></script>
+
+  <script>
+
+    async function login() {
+
+      const email =
+        document.getElementById("email").value;
+
+      const password =
+        document.getElementById("password").value;
+
+      try {
+
+        const result =
+          await authPost("/api/auth/login", {
+            email,
+            password
+          });
+
+        console.log(result);
+
+        if (!result.success) {
+          alert(result.message);
+          return;
+        }
+
+        if (result.role !== "admin") {
+          alert("Not admin account");
+          return;
+        }
+
+        localStorage.setItem(
+          "admin",
+          JSON.stringify(result.user)
+        );
+
+        alert("Admin login success ✅");
+
+        window.location.href =
+          "/admin.html";
+
+      } catch (err) {
+
+        console.error(err);
+
+        alert(
+          "Backend not reachable"
+        );
+      }
     }
 
-    if (result.role !== "admin") {
-      alert("Not admin account");
-      return;
-    }
+  </script>
 
-    alert("Admin login success ✅");
-
-    localStorage.setItem(
-      "admin",
-      JSON.stringify(result.user)
-    );
-
-    window.location.href = "/admin.html";
-
-  } catch (err) {
-
-    console.error(err);
-
-    alert("Backend not reachable");
-  }
-}
-</script>
+</body>
+</html>
