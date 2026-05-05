@@ -1,5 +1,9 @@
 console.log("APP JS LOADED ✅");
 
+
+
+
+
 // 🔴 Catch ALL hidden JS errors
 window.onerror = function (msg, url, line, col, error) {
   console.error("❌ GLOBAL ERROR:", { msg, url, line, col, error });
@@ -95,63 +99,7 @@ function showSuccessModal(message) {
 
 
 
-window.login = async function () {
-  try {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
 
-    console.log("🔐 Attempt login:", email);
-
-    const res = await fetch(`${API}/api/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
-    });
-
-    // ✅ handle invalid JSON safely
-    let data;
-    try {
-      data = await res.json();
-    } catch (err) {
-      console.error("❌ Invalid JSON response");
-      alert("Server error. Try again.");
-      return;
-    }
-
-    console.log("📦 Login response:", data);
-
-    // ✅ success flow
-    
-    
-    if (data.success) {
-  const role = data.role || "user";
-  localStorage.setItem("email", email);
-
-
-    
-  localStorage.setItem("userId", data.userId);
-
-  alert("Login success ✅");
-
-  if (role === "admin") {
-    window.location.href = "/frontend/admin.html";
-  } else {
-    
-    window.location.href = "/dashboard.html";
-  }
-}
-    
-    else {
-      alert(data.message || "Wrong email or password ❌");
-    }
-
-  } catch (err) {
-    console.error("❌ Login error:", err);
-    alert("Network error. Backend not reachable.");
-  }
-};
 
 
 
@@ -176,36 +124,7 @@ window.login = async function () {
 
 
 
-  window.signup = async function () {
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  console.log("🚀 Sending:", { name, email, password }); // ADD THIS
-
-  const res = await fetch(`${API}/api/auth/signup`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    name,
-    email,
-    password
-  })
-});
-  const data = await res.json();
-
-  console.log("📩 RESPONSE:", data); // ADD THIS
-
-  if (data.success) {
-    document.getElementById("msg").innerText = "Signup success ✅";
-    window.location.href = "login.html";
-  } else {
-    document.getElementById("msg").innerText =
-      data.message || "Signup failed ❌";
-  }
-}
+  
 
 
 
@@ -1153,7 +1072,7 @@ function showAdviceUI(advice) {
 async function saveBank() {
   const email = localStorage.getItem("email");
 
-  const res = await fetchfetch(`${API}/api/add-bank`, {
+  const res = await fetch(`${API}/api/add-bank`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -1221,16 +1140,7 @@ async function loadAdminAnalytics() {
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
-  const signupBtn = document.getElementById("signupBtn");
 
-  if (signupBtn) {
-    signupBtn.addEventListener("click", () => {
-      console.log("Signup button clicked ✅");
-      signup();
-    });
-  }
-});
 
 
 
