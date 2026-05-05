@@ -4,7 +4,7 @@ async function authPost(url, data) {
 
   try {
 
-    const res = await fetch(
+    const response = await fetch(
       `${API}${url}`,
       {
         method: "POST",
@@ -17,13 +17,13 @@ async function authPost(url, data) {
       }
     );
 
-    return await res.json();
+    return await response.json();
 
-  } catch (err) {
+  } catch (error) {
 
     console.error(
-      "AUTH POST ERROR:",
-      err
+      "AUTH API ERROR:",
+      error
     );
 
     return {
