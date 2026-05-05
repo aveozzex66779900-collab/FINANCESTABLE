@@ -36,13 +36,10 @@
         placeholder="Password"
       />
 
-      <button
-        id="adminLoginBtn"
-        onclick="login()"
-      >
-        Login
-      </button>
-
+      
+      <button onclick="login()">
+  Login
+</button>
     </div>
 
   </div>
@@ -50,57 +47,54 @@
   <script src="./js/config.js"></script>
   <script src="./js/auth/auth-api.js"></script>
 
-  <script>
+  
 
-    async function login() {
 
-      const email =
-        document.getElementById("email").value;
 
-      const password =
-        document.getElementById("password").value;
 
-      try {
 
-        const result =
-          await authPost("/api/auth/login", {
-            email,
-            password
-          });
 
-        console.log(result);
 
-        if (!result.success) {
-          alert(result.message);
-          return;
-        }
 
-        if (result.role !== "admin") {
-          alert("Not admin account");
-          return;
-        }
+<script>
+async function login() {
 
-        localStorage.setItem(
-          "admin",
-          JSON.stringify(result.user)
-        );
+  const email =
+    document.getElementById("email").value;
 
-        alert("Admin login success ✅");
+  const password =
+    document.getElementById("password").value;
 
-        window.location.href =
-          "/admin.html";
-
-      } catch (err) {
-
-        console.error(err);
-
-        alert(
-          "Backend not reachable"
-        );
-      }
+  const result = await authPost(
+    "/api/auth/login",
+    {
+      email,
+      password
     }
+  );
 
-  </script>
+  console.log(result);
 
+  if (result.success) {
+
+    alert("Admin login success ✅");
+
+    localStorage.setItem(
+      "admin",
+      JSON.stringify(result)
+    );
+
+    window.location.href =
+      "/admin.html";
+
+  } else {
+
+    alert(
+      result.message ||
+      "Login failed"
+    );
+  }
+}
+</script>
 </body>
 </html>
