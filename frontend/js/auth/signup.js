@@ -1,18 +1,24 @@
+
+
+
+
 console.log(
   "SIGNUP JS LOADED ✅"
 );
+
+window.signupRunning = false;
 
 document
 .addEventListener(
   "DOMContentLoaded",
   () => {
 
-    const signupBtn =
+    const btn =
       document.getElementById(
         "signupBtn"
       );
 
-    if (!signupBtn) {
+    if (!btn) {
 
       console.error(
         "signupBtn not found"
@@ -21,16 +27,18 @@ document
       return;
     }
 
-    signupBtn
-    .addEventListener(
-      "click",
-      signup
-    );
+    btn.onclick = signup;
 
   }
 );
 
 async function signup() {
+
+  if (
+    window.signupRunning
+  ) return;
+
+  window.signupRunning = true;
 
   try {
 
@@ -54,6 +62,11 @@ async function signup() {
         "password"
       )
       ?.value;
+
+    console.log({
+      name,
+      email
+    });
 
     const res =
       await fetch(
@@ -115,6 +128,13 @@ async function signup() {
     alert(
       "Signup error"
     );
+
+  }
+
+  finally {
+
+    window.signupRunning =
+      false;
 
   }
 
