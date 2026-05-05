@@ -7,12 +7,12 @@ document
   "DOMContentLoaded",
   () => {
 
-    const btn =
+    const signupBtn =
       document.getElementById(
         "signupBtn"
       );
 
-    if (!btn) {
+    if (!signupBtn) {
 
       console.error(
         "signupBtn not found"
@@ -21,7 +21,8 @@ document
       return;
     }
 
-    btn.addEventListener(
+    signupBtn
+    .addEventListener(
       "click",
       signup
     );
@@ -53,11 +54,6 @@ async function signup() {
         "password"
       )
       ?.value;
-
-    console.log({
-      name,
-      email
-    });
 
     const res =
       await fetch(
