@@ -1,47 +1,107 @@
+console.log(
+  "SIGNUP JS LOADED ✅"
+);
+
+document
+.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const btn =
+      document.getElementById(
+        "signupBtn"
+      );
+
+    if (!btn) {
+
+      console.error(
+        "signupBtn not found"
+      );
+
+      return;
+    }
+
+    btn.addEventListener(
+      "click",
+      signup
+    );
+
+  }
+);
+
 async function signup() {
 
   try {
 
     const name =
-      document.getElementById("name").value.trim();
+      document
+      .getElementById(
+        "name"
+      )
+      ?.value;
 
     const email =
-      document.getElementById("email").value.trim();
+      document
+      .getElementById(
+        "email"
+      )
+      ?.value;
 
     const password =
-      document.getElementById("password").value;
+      document
+      .getElementById(
+        "password"
+      )
+      ?.value;
 
-    if (
-      !name ||
-      !email ||
-      !password
-    ) {
+    console.log({
+      name,
+      email
+    });
 
-      alert("Fill all fields");
+    const res =
+      await fetch(
 
-      return;
-    }
+        `${API}/api/auth/signup`,
+
+        {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            name,
+            email,
+            password
+
+          })
+
+        }
+
+      );
 
     const data =
-      await authPost(
-        "signup",
-        {
-          name,
-          email,
-          password
-        }
-      );
+      await res.json();
 
     console.log(data);
 
     if (data.success) {
 
-      alert("Signup success ✅");
+      alert(
+        "Signup success ✅"
+      );
 
       window.location.href =
-        "login.html";
+        "./login.html";
 
-    } else {
+    }
+
+    else {
 
       alert(
         data.message ||
@@ -50,11 +110,15 @@ async function signup() {
 
     }
 
-  } catch (err) {
+  }
+
+  catch (err) {
 
     console.error(err);
 
-    alert("Server error");
+    alert(
+      "Signup error"
+    );
 
   }
 
