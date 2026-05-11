@@ -79,11 +79,21 @@ async function login() {
 
     alert("Admin login success ✅");
 
-    localStorage.setItem(
-      "admin",
-      JSON.stringify(result)
-    );
+    
+    
 
+
+
+    localStorage.setItem(
+  "admin",
+  JSON.stringify(result)
+);
+
+// SAFE ROLE STORAGE
+localStorage.setItem(
+  "role",
+  result.role
+);
     window.location.href =
       "/admin.html";
 

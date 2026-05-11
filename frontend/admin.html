@@ -10,11 +10,24 @@
 
 <!-- 🔐 ADMIN PROTECTION -->
 <script>
-  const role = localStorage.getItem("role");
-  if (role !== "admin") {
-    alert("Access Denied ❌");
-    window.location.href = "admin-login.html";
-  }
+  
+
+
+
+const adminData =
+  JSON.parse(localStorage.getItem("admin"));
+
+if (
+  !adminData ||
+  adminData.role !== "admin"
+) {
+
+  alert("Access Denied ❌");
+
+  window.location.href =
+    "admin-login.html";
+}
+
 </script>
 
 <div class="dashboard">
