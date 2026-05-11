@@ -47,6 +47,143 @@ app.use(cors({
 
 app.use(express.json());
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ===============================
+// ADMIN USER MANAGEMENT ROUTES
+// SAFE ISOLATED FEATURE
+// ===============================
+
+// temporary isolated storage
+let adminUsers: any[] = [];
+
+
+// GET USERS
+app.get("/api/admin/users", (req, res) => {
+
+  try {
+
+    res.json(adminUsers);
+
+  } catch (error) {
+
+    console.error(
+      "LOAD USERS ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to load users"
+    });
+  }
+});
+
+
+
+// ADD USER
+app.post("/api/admin/add-user", (req, res) => {
+
+  try {
+
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Missing email or password"
+      });
+    }
+
+    const newUser = {
+
+      id: Date.now(),
+
+      email,
+
+      password,
+
+      role: "user",
+
+      createdAt:
+        new Date().toISOString()
+    };
+
+    adminUsers.push(newUser);
+
+    console.log(
+      "NEW USER ADDED:",
+      newUser.email
+    );
+
+    res.json({
+      success: true,
+      user: newUser
+    });
+
+  } catch (error) {
+
+    console.error(
+      "ADD USER ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+});
+
+
+
+// DELETE USER
+app.post(
+  "/api/admin/delete-user",
+  (req, res) => {
+
+    try {
+
+      const { id } = req.body;
+
+      adminUsers =
+        adminUsers.filter(
+          user => user.id != id
+        );
+
+      res.json({
+        success: true
+      });
+
+    } catch (error) {
+
+      console.error(
+        "DELETE USER ERROR:",
+        error
+      );
+
+      res.status(500).json({
+        success: false
+      });
+    }
+});
+
 app.use("/admin", adminUsersRoutes);
 app.use("/", dashboardTransactions);
 app.use(
@@ -77,7 +214,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 
-// ================= SIGNUP =================
+
 
 
 
@@ -742,29 +879,7 @@ app.post("/api/pay", async (req, res) => {
 
 
 
-app.get("/admin/users", async (req, res) => {
 
-  try {
-
-    const users = await User.find().sort({ createdAt: -1 });
-
-    res.json({
-      success: true,
-      users
-    });
-
-  } catch (error) {
-
-    console.log("ADMIN USERS ERROR:", error);
-
-    res.status(500).json({
-      success: false,
-      users: []
-    });
-
-  }
-
-});
 
 
 
@@ -795,18 +910,7 @@ app.post("/admin/block-user", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
-app.post("/admin/delete-user", async (req, res) => {
-  try {
-    const { id } = req.body;
 
-    await User.findByIdAndDelete(id);
-
-    res.json({ success: true });
-
-  } catch {
-    res.status(500).json({ success: false });
-  }
-});
 
 
 
