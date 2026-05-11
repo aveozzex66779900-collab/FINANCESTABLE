@@ -228,7 +228,16 @@ if (
 
 
 <script>
-window.onload = loadUsers;
+
+
+
+window.onload = function () {
+
+  if (typeof loadUsers === "function") {
+    loadUsers();
+  }
+
+};
 </script>
 
 <script>
@@ -319,7 +328,9 @@ async function deleteUser(id) {
 </script>
 
 
+<script src="./js/config.js"></script>
 
+<script src="./js/auth/auth-api.js"></script>
 <script src="./js/admin-users.js"></script>
 </body>
 </html>
