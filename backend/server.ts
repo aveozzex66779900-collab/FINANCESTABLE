@@ -14,8 +14,8 @@ import { log } from "./middleware/logger";
 import User from "./models/User";
 import Transaction
 from "./models/transaction";
-
-
+import aiSupportRoutes
+from "./routes/ai-support";
 
 
 import aiRoutes from "./routes/ai";
@@ -196,6 +196,14 @@ app.use(
   "/api/auth",
   authRoutes
 );
+
+app.use(
+  "/api/ai-support",
+  aiSupportRoutes
+);
+
+
+
 
 
 
