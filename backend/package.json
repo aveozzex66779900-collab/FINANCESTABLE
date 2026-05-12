@@ -7,7 +7,15 @@
 
   
   
-  "scripts": {
+  
+
+
+
+
+
+
+
+"scripts": {
 
   "dev": "ts-node-dev --respawn --transpile-only server.ts",
 
