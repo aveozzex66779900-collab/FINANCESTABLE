@@ -2137,3 +2137,227 @@ textarea::placeholder {
 .action-btn:hover{
   transform:translateY(-5px);
 }
+
+
+
+
+
+
+
+
+
+/* =========================================
+   MOBILE RESPONSIVE SAFE LAYER
+   FINANCESTABLE
+========================================= */
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+
+  overflow-x:hidden;
+
+  width:100%;
+
+  max-width:100%;
+}
+
+
+/* MAIN CONTAINERS */
+
+.container,
+.dashboard,
+.dashboard-container,
+.auth-box,
+.login-box,
+.card,
+.smart-card{
+
+  width:100%;
+
+  max-width:100%;
+}
+
+
+/* INPUTS */
+
+input,
+select,
+textarea,
+button{
+
+  width:100%;
+
+  max-width:100%;
+}
+
+
+/* TABLE SAFE SCROLL */
+
+table{
+
+  display:block;
+
+  overflow-x:auto;
+
+  width:100%;
+}
+
+
+/* RESPONSIVE IMAGES */
+
+img{
+
+  max-width:100%;
+
+  height:auto;
+
+  border-radius:14px;
+}
+
+
+/* MOBILE OPTIMIZATION */
+
+@media (max-width: 768px){
+
+  body{
+
+    padding:10px;
+  }
+
+
+  h1{
+    font-size:28px;
+  }
+
+  h2{
+    font-size:24px;
+  }
+
+  h3{
+    font-size:20px;
+  }
+
+
+  /* DASHBOARD */
+
+  .dashboard-grid,
+  .cards,
+  .stats-grid{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+  }
+
+
+  /* CARDS */
+
+  .card,
+  .smart-card,
+  .feature-card,
+  .payment-card{
+
+    width:100%;
+
+    margin:0 auto;
+
+    border-radius:20px;
+
+    padding:18px;
+  }
+
+
+  /* BUTTONS */
+
+  button{
+
+    min-height:50px;
+
+    font-size:16px;
+
+    border-radius:14px;
+  }
+
+
+  /* INPUTS */
+
+  input,
+  textarea,
+  select{
+
+    min-height:50px;
+
+    font-size:16px;
+
+    border-radius:14px;
+
+    padding:12px;
+  }
+
+
+  /* ADMIN TABLE */
+
+  .users-table,
+  .transactions-table{
+
+    overflow-x:auto;
+
+    display:block;
+  }
+
+
+  /* HEADER */
+
+  .topbar,
+  .navbar{
+
+    flex-direction:column;
+
+    gap:10px;
+  }
+
+
+  /* PAYMENT BOXES */
+
+  .payment-box,
+  .crypto-box,
+  .upi-box,
+  .b2b-box{
+
+    width:100%;
+  }
+
+
+  /* SUPPORT PAGE */
+
+  .support-container{
+
+    padding:15px;
+  }
+
+
+  /* SMART HUB */
+
+  .hub-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr;
+
+    gap:16px;
+  }
+
+
+  /* FIX OVERFLOW */
+
+  *{
+
+    max-width:100%;
+  }
+}
